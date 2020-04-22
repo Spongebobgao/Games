@@ -52,7 +52,7 @@ export default {
       let thisAlias = this;
       this.placeMole = setInterval(function() {
         thisAlias.placeTheMole();
-      }, 500);
+      }, 700);
       this.countTime = setInterval(function() {
         if (thisAlias.timeLeft > 0) {
           thisAlias.timeLeft--;
@@ -98,10 +98,10 @@ export default {
 }
 .grid {
   border: 1px#e59a9a solid;
-  background: #efc2c2;
   width: 150px;
   height: 150px;
   cursor: pointer;
+  box-shadow: 2px 2px 2px 2px #efc2c2;
 }
 .msg {
   color: #b62f2f;
@@ -119,7 +119,7 @@ export default {
 }
 .mole {
   background: url("../assets/mole.png");
-  background-color: #efc2c2;
+  background-color: #ffece6;
   background-blend-mode: multiply;
 }
 </style>

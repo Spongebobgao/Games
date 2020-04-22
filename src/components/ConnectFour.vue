@@ -4,18 +4,18 @@
       <v-row dense>
         <v-col cols="12">
           <v-card color="#ff9f80" dark>
-            <h2>
+            <h3>
               {{msg}}
-              <br />
-              Current Player: {{player}}
-              <span class="btn" @click="call">Play Again</span>
-            </h2>
+              <br />Current Player:
+              <span class="player">{{player}}</span>
+              <span class="btn" @click="reRender">Play Again</span>
+            </h3>
           </v-card>
         </v-col>
       </v-row>
     </v-container>
     <div class="board">
-      <div v-for="n in 256" :key="n" :id="n" class="grid"></div>
+      <div v-for="n in 260" :key="n" :id="n" class="grid" @click="placePiece(n)"></div>
     </div>
   </v-card>
 </template>
@@ -24,40 +24,61 @@
 export default {
   data() {
     return {
-      player: "Lin",
+      player: "Player One",
       msg: "Connect Four"
     };
   },
   methods: {
-    call() {
-      alert("ok");
+    reRender() {
+      window.location.reload();
+    },
+    placePiece(n) {
+      if (this.player === "Player One") {
+        document.getElementById(n).classList.add("black");
+        this.player = "Player Two";
+      } else {
+        document.getElementById(n).classList.add("orange");
+        this.player = "Player One";
+      }
     }
   }
 };
 </script>
 
 <style>
-h2 {
+h3 {
   margin-left: 10px;
 }
 .board {
   display: flex;
   flex-wrap: wrap;
-  margin-left: 15px;
+  margin: 0 50px 0 50px;
 }
 .grid {
-  border: 0.5px solid #ff9f80;
+  border: 0.5px solid #fac9bb;
   border-collapse: collapse;
+  border-radius: 50%;
   background: #ffece6;
   height: 35px;
   width: 35px;
+  cursor: pointer;
 }
 .btn {
-  margin-left: 450px;
+  margin-left: 400px;
   font-size: 0.9rem;
   cursor: pointer;
   background: #cc3300;
-  padding: 5px;
+  padding: 2px;
   border-radius: 10%;
+}
+.black {
+  background: black;
+}
+.orange {
+  background: orange;
+}
+.player {
+  font-style: italic;
+  color: #cc3300;
 }
 </style>
