@@ -15,7 +15,6 @@
     </div>
     <div class="game">
       <button type="button" @click="start" class="btn">Start Game</button>
-      <button type="button" @click="reRender" class="btn">Play Again</button>
       <div class="board">
         <div v-for="n in 9" :key="n" :id="`${n}`" @click="whackTheMole(n)" class="grid"></div>
       </div>
@@ -30,19 +29,31 @@ export default {
       msg: "Whack The Mole",
       score: 0,
       timeLeft: 60,
-      id: 0
+      id: 0,
+      placeMole: null,
+      countTime: null
     };
   },
   methods: {
-    reRender() {
-      window.location.reload();
-    },
     start() {
+      if (this.placeMole || this.countTime) {
+        clearInterval(this.placeMole);
+        clearInterval(this.countTime);
+        this.msg = "Whack The Mole";
+        this.score = 0;
+        this.timeLeft = 60;
+        this.id = 0;
+        this.setIntervals();
+      } else {
+        this.setIntervals();
+      }
+    },
+    setIntervals() {
       let thisAlias = this;
-      setInterval(function() {
+      this.placeMole = setInterval(function() {
         thisAlias.placeTheMole();
       }, 500);
-      setInterval(function() {
+      this.countTime = setInterval(function() {
         if (thisAlias.timeLeft > 0) {
           thisAlias.timeLeft--;
         } else {
@@ -97,7 +108,7 @@ export default {
   font-style: italic;
 }
 .btn {
-  margin: 20px 70px;
+  margin: 20px 180px;
   height: 2rem;
   background: #b62f2f;
   border: none;
@@ -108,5 +119,7 @@ export default {
 }
 .mole {
   background: url("../assets/mole.png");
+  background-color: #efc2c2;
+  background-blend-mode: multiply;
 }
 </style>
