@@ -16,32 +16,30 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn href="/flipCard" text>
-        <span class="mr-2">Games</span>
+      <v-btn @click="navigateTo('/flipCard')" text>
+        <span class="mr-2">Memory Game</span>
+      </v-btn>
+      <v-btn @click="navigateTo('/whackTheMole')" text>
+        <span class="mr-2">Whack The Mole</span>
       </v-btn>
     </v-app-bar>
 
     <v-content>
-      <!-- <Home /> -->
-      <FlipCard />
+      <router-view></router-view>
     </v-content>
   </v-app>
 </template>
 
 <script>
-//import Home from "./components/Home";
-import FlipCard from "./components/FlipCard";
 export default {
   name: "App",
 
-  components: {
-    // Home,
-    FlipCard
-  },
-
-  data: () => ({
-    methods: {}
-  })
+  data: () => ({}),
+  methods: {
+    navigateTo(path) {
+      this.$router.push(path);
+    }
+  }
 };
 </script>
 <style scoped>
