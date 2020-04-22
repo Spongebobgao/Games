@@ -7,12 +7,12 @@
     <h2>{{msg}}</h2>
     <div class="board">
       <img
-        v-for="index of numbers"
-        :id="`${index}`"
+        v-for="n in 16"
+        :id="`${n-1}`"
         class="card"
         src="../assets/background.jpg"
-        @click="flipCard(index)"
-        :key="index"
+        @click="flipCard(n-1)"
+        :key="n"
       />
     </div>
     <button type="button" @click="reRender" class="btn">Play again</button>
@@ -22,9 +22,11 @@
 <script>
 export default {
   name: "FlipCard",
+  created() {
+    this.allTheCards.sort(() => Math.random() - 0.5);
+  },
   data() {
     return {
-      numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
       allTheCards: [
         {
           name: "bear",
@@ -104,11 +106,12 @@ export default {
     flipCard(id) {
       if (!this.allChosenId.includes(id) && !this.cardChosenId.includes(id)) {
         this.src = this.allTheCards[id].img;
+        console.log(typeof this.src);
         this.cardChosen.push(this.allTheCards[id].name);
         document.getElementById(id).setAttribute("src", this.src);
         this.cardChosenId.push(id);
         if (this.cardChosen.length === 2) {
-          setTimeout(this.checkMatch, 500);
+          setTimeout(this.checkMatch, 200);
         }
       }
     },
