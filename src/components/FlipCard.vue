@@ -157,8 +157,9 @@ export default {
 };
 </script>
 
-<style>
-body {
+<style scoped>
+h1,
+h2 {
   text-align: center;
 }
 .board {
@@ -169,7 +170,8 @@ body {
   margin: auto;
 }
 .btn {
-  margin: 20px;
+  margin-left: 600px;
+  margin-top: 20px;
   height: 2rem;
   background: #b8860b;
   border: none;
