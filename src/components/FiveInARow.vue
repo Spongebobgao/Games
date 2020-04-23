@@ -15,13 +15,13 @@
       </v-row>
     </v-container>
     <div class="board">
-      <div v-for="m in 20" :key="m">
+      <div v-for="m in 20" :key="m+10">
         <div
           v-for="n in 13"
-          :key="n"
-          :id="`${n.toString()+m}`"
+          :key="n+10"
+          :id="`${(n+10).toString()+(m+10)}`"
           class="grid"
-          @click="placePiece(`${n.toString()+m}`)"
+          @click="placePiece(n+10,m+10)"
         ></div>
       </div>
     </div>
@@ -43,25 +43,36 @@ export default {
     reRender() {
       window.location.reload();
     },
-    placePiece(mn) {
-      if (!this.clicked.includes(mn)) {
+    placePiece(n, m) {
+      let nm = n.toString() + m;
+      if (!this.clicked.includes(nm)) {
         if (this.player === "Player One") {
-          document.getElementById(mn).classList.add("black");
-          this.black.push({ color: "black", id: mn });
-          this.clicked.push(mn);
+          document.getElementById(nm).classList.add("black");
+          this.clicked.push(nm);
+          this.black.push({ color: "black", id: nm, row: n, column: m });
           this.player = "Player Two";
           //everytime the player places a piece should check if there is a win
-          this.checkForFive(mn);
+          this.checkForFive(n, m);
         } else {
-          document.getElementById(mn).classList.add("orange");
-          this.orange.push({ mn: "orange" });
-          this.clicked.push(mn);
+          document.getElementById(nm).classList.add("orange");
+          this.clicked.push(nm);
+          this.orange.push({ color: "orange", id: nm, row: n, column: m });
           this.player = "Player One";
-          this.checkForFive(mn);
+          this.checkForFive(n, m);
         }
       }
-    },
-    checkForFive() {}
+    }
+    //check row, column and diagonals, n is row m is column
+    // checkForFive(n, m) {
+    //   //check for row:left part
+    //   // if (this.player === "Player One") {
+    //   //   this.black.forEach(piece =>
+    //   //     console.log(piece.row, piece.column, piece.id)
+    //   //   );
+    //   //   console.log(m, "m");
+    //   // } else {
+    //   // }
+    // }
   }
 };
 </script>
