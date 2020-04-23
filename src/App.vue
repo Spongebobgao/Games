@@ -22,8 +22,8 @@
       <v-btn @click="navigateTo('/whackTheMole')" text>
         <span class="mr-2">Whack The Mole</span>
       </v-btn>
-      <v-btn @click="navigateTo('/connectFour')" text>
-        <span class="mr-2">Connect Four</span>
+      <v-btn @click="navigateTo('/fiveInARow')" text>
+        <span class="mr-2">Five In A Row</span>
       </v-btn>
     </v-app-bar>
 

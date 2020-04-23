@@ -15,7 +15,15 @@
       </v-row>
     </v-container>
     <div class="board">
-      <div v-for="n in 260" :key="n" :id="n" class="grid" @click="placePiece(n)"></div>
+      <div v-for="m in 20" :key="m">
+        <div
+          v-for="n in 13"
+          :key="n"
+          :id="`${n.toString()+m}`"
+          class="grid"
+          @click="placePiece(`${n.toString()+m}`)"
+        ></div>
+      </div>
     </div>
   </v-card>
 </template>
@@ -25,27 +33,28 @@ export default {
   data() {
     return {
       player: "Player One",
-      msg: "Connect Four"
+      msg: "Five In A row"
     };
   },
   methods: {
     reRender() {
       window.location.reload();
     },
-    placePiece(n) {
+    placePiece(mn) {
       if (this.player === "Player One") {
-        document.getElementById(n).classList.add("black");
+        document.getElementById(mn).classList.add("black");
         this.player = "Player Two";
       } else {
-        document.getElementById(n).classList.add("orange");
+        document.getElementById(mn).classList.add("orange");
         this.player = "Player One";
       }
-    }
+    },
+    checkPieces() {}
   }
 };
 </script>
 
-<style>
+<style scoped>
 h3 {
   margin-left: 10px;
 }

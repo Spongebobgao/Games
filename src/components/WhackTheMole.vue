@@ -98,6 +98,7 @@ export default {
 }
 .grid {
   border: 1px#e59a9a solid;
+  background: #ffece6;
   width: 150px;
   height: 150px;
   cursor: pointer;

@@ -4,7 +4,7 @@ import Router from 'vue-router'
 import Home from '@/components/Home.vue'
 import FlipCard from '@/components/FlipCard'
 import WhackTheMole from '@/components/WhackTheMole'
-import ConnectFour from '@/components/ConnectFour'
+import FiveInARow from '@/components/FiveInARow'
 
 
 Vue.use(Router)
@@ -24,8 +24,8 @@ const router = new Router({
       component: WhackTheMole
     },
     {
-      path: '/connectFour',
-      component: ConnectFour
+      path: '/fiveInARow',
+      component: FiveInARow
     }
   ]
 })
