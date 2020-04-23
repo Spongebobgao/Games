@@ -33,7 +33,10 @@ export default {
   data() {
     return {
       player: "Player One",
-      msg: "Five In A row"
+      msg: "Five In A row",
+      black: [],
+      orange: [],
+      clicked: []
     };
   },
   methods: {
@@ -41,15 +44,24 @@ export default {
       window.location.reload();
     },
     placePiece(mn) {
-      if (this.player === "Player One") {
-        document.getElementById(mn).classList.add("black");
-        this.player = "Player Two";
-      } else {
-        document.getElementById(mn).classList.add("orange");
-        this.player = "Player One";
+      if (!this.clicked.includes(mn)) {
+        if (this.player === "Player One") {
+          document.getElementById(mn).classList.add("black");
+          this.black.push({ color: "black", id: mn });
+          this.clicked.push(mn);
+          this.player = "Player Two";
+          //everytime the player places a piece should check if there is a win
+          this.checkForFive(mn);
+        } else {
+          document.getElementById(mn).classList.add("orange");
+          this.orange.push({ mn: "orange" });
+          this.clicked.push(mn);
+          this.player = "Player One";
+          this.checkForFive(mn);
+        }
       }
     },
-    checkPieces() {}
+    checkForFive() {}
   }
 };
 </script>
@@ -80,9 +92,11 @@ h3 {
   padding: 2px;
   border-radius: 10%;
 }
+/* the color of player 1 is black */
 .black {
   background: black;
 }
+/* the color of player 2 is orange */
 .orange {
   background: orange;
 }

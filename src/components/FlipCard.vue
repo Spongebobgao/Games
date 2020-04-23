@@ -106,7 +106,6 @@ export default {
     flipCard(id) {
       if (!this.allChosenId.includes(id) && !this.cardChosenId.includes(id)) {
         this.src = this.allTheCards[id].img;
-        console.log(typeof this.src);
         this.cardChosen.push(this.allTheCards[id].name);
         document.getElementById(id).setAttribute("src", this.src);
         this.cardChosenId.push(id);
