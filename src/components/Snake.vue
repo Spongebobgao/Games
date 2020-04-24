@@ -64,80 +64,41 @@ export default {
       );
       //go to the right
       if (e.code === "ArrowRight") {
-        this.goRight("ArrowRight");
+        if (this.currentDirection != "ArrowLeft") {
+          this.allDirections("ArrowRight", 1);
+        }
       }
       //go to the left
       if (e.code === "ArrowLeft") {
-        this.goLeft("ArrowLeft");
+        if (this.currentDirection != "ArrowRight") {
+          this.allDirections("ArrowLeft", -1);
+        }
       }
       //go up
       if (e.code === "ArrowUp") {
-        this.goUp("ArrowUp");
+        if (this.currentDirection != "ArrowDown") {
+          this.allDirections("ArrowUp", -100);
+        }
       }
       //go down
       if (e.code === "ArrowDown") {
-        this.goDown("ArrowDown");
+        if (this.currentDirection != "ArrowUp") {
+          this.allDirections("ArrowDown", 100);
+        }
       }
     },
-    goRight(ArrowRight) {
-      if (this.currentDirection != "ArrowLeft") {
-        this.currentDirection = ArrowRight;
-        this.snake.shift();
-        this.lastIndexOfSnake--;
-        this.snake.forEach(snake =>
-          document.getElementById(snake).classList.add("snake")
-        );
-        this.snake.push(this.snake[this.lastIndexOfSnake] + 1);
-        this.lastIndexOfSnake++;
-        document
-          .getElementById(this.snake[this.lastIndexOfSnake])
-          .classList.add("snakeHead");
-      }
-    },
-    goLeft(ArrowLeft) {
-      if (this.currentDirection != "ArrowRight") {
-        this.currentDirection = ArrowLeft;
-        this.snake.shift();
-        this.lastIndexOfSnake--;
-        this.snake.forEach(snake =>
-          document.getElementById(snake).classList.add("snake")
-        );
-        this.snake.push(this.snake[this.lastIndexOfSnake] - 1);
-        this.lastIndexOfSnake++;
-        document
-          .getElementById(this.snake[this.lastIndexOfSnake])
-          .classList.add("snakeHead");
-      }
-    },
-    goUp(ArrowUp) {
-      if (this.currentDirection != "ArrowDown") {
-        this.currentDirection = ArrowUp;
-        this.snake.shift();
-        this.lastIndexOfSnake--;
-        this.snake.forEach(snake =>
-          document.getElementById(snake).classList.add("snake")
-        );
-        this.snake.push(this.snake[this.lastIndexOfSnake] - 100);
-        this.lastIndexOfSnake++;
-        document
-          .getElementById(this.snake[this.lastIndexOfSnake])
-          .classList.add("snakeHead");
-      }
-    },
-    goDown(ArrowDown) {
-      if (this.currentDirection != "ArrowUp") {
-        this.currentDirection = ArrowDown;
-        this.snake.shift();
-        this.lastIndexOfSnake--;
-        this.snake.forEach(snake =>
-          document.getElementById(snake).classList.add("snake")
-        );
-        this.snake.push(this.snake[this.lastIndexOfSnake] + 100);
-        this.lastIndexOfSnake++;
-        document
-          .getElementById(this.snake[this.lastIndexOfSnake])
-          .classList.add("snakeHead");
-      }
+    allDirections(Arrow, offset) {
+      this.currentDirection = Arrow;
+      this.snake.shift();
+      this.lastIndexOfSnake--;
+      this.snake.forEach(snake =>
+        document.getElementById(snake).classList.add("snake")
+      );
+      this.snake.push(this.snake[this.lastIndexOfSnake] + offset);
+      this.lastIndexOfSnake++;
+      document
+        .getElementById(this.snake[this.lastIndexOfSnake])
+        .classList.add("snakeHead");
     }
   }
 };
