@@ -10,6 +10,12 @@
               <span class="player">{{player}}</span>
               <span class="btn" @click="reRender">Play Again</span>
             </h3>
+            <div id="myModal" class="modal">
+              <div class="modal-content">
+                <span @click="closeModal" class="close">&times;</span>
+                <p id="content"></p>
+              </div>
+            </div>
           </v-card>
         </v-col>
       </v-row>
@@ -39,6 +45,9 @@ export default {
     };
   },
   methods: {
+    closeModal() {
+      document.getElementById("myModal").style.display = "none";
+    },
     reRender() {
       window.location.reload();
     },
@@ -109,7 +118,11 @@ export default {
           } else break;
         }
       }
-      if (count === 5) this.msg = player + " win";
+      // if (count === 5) this.msg = player + " win";
+      if (count === 5) {
+        document.getElementById("content").innerHTML = player + " Win";
+        document.getElementById("myModal").style.display = "block";
+      }
     }
   }
 };
@@ -146,5 +159,44 @@ h3 {
 .player {
   font-style: italic;
   color: #cc3300;
+}
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 70px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.3); /* Black w/ opacity */
+}
+.modal-content {
+  background-color: #b62f2f;
+  opacity: 0.8;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #cc3300;
+  border-radius: 5%;
+  width: 60%;
+  color: white;
+  font-size: 2rem;
+  justify-content: center;
+  font-family: "Lucida Console", Courier, monospace;
+  font-style: italic;
+}
+.close {
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
 }
 </style>
