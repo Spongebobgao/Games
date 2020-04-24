@@ -16,7 +16,9 @@
       </v-row>
     </v-container>
     <div class="board">
-      <div v-for="n in 1218" :key="n" :id="`${n}`" class="grid"></div>
+      <div v-for="m in 42" :key="m+10">
+        <div v-for="n in 29" :key="n+10" :id="`${(n+10)}${(m+10)}`" class="grid"></div>
+      </div>
     </div>
   </v-card>
 </template>
@@ -24,10 +26,63 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      snake: [3622, 3623, 3624],
+      lastKeyPressed: "",
+      snakeHead: 0
+    };
   },
   methods: {
-    startGame() {}
+    startGame() {
+      window.addEventListener("keydown", this.controlSnake);
+      this.snake.forEach(snake =>
+        document.getElementById(snake).classList.add("snake")
+      );
+    },
+    controlSnake(e) {
+      this.snake.forEach(snake =>
+        document.getElementById(snake).classList.remove("snake")
+      );
+      //go to the right
+      if (e.code === "ArrowRight") {
+        this.snake = this.snake.map(value => {
+          return value + 1;
+        });
+        console.log(this.snake.toString());
+        this.snake.forEach(snake =>
+          document.getElementById(snake).classList.add("snake")
+        );
+      }
+      //go to the left
+      if (e.code === "ArrowLeft") {
+        this.snake = this.snake.map(value => {
+          return value - 1;
+        });
+        this.snake.forEach(snake =>
+          document.getElementById(snake).classList.add("snake")
+        );
+      }
+      //go up
+      if (e.code === "ArrowUp") {
+        this.snakeHead = this.snake[this.snake.length - 1];
+        this.snake[this.snake.length - 1] -= 100;
+        this.snake[0] += 1;
+        this.snake[1] += 1;
+        this.snake.forEach(snake =>
+          document.getElementById(snake).classList.add("snake")
+        );
+      }
+      //go down
+      if (e.code === "ArrowDown") {
+        this.snakeHead = this.snake[this.snake.length - 1];
+        this.snake[this.snake.length - 1] += 100;
+        this.snake[0] += 1;
+        this.snake[1] += 1;
+        this.snake.forEach(snake =>
+          document.getElementById(snake).classList.add("snake")
+        );
+      }
+    }
   }
 };
 </script>
@@ -61,5 +116,8 @@ h3 {
   padding: 2px;
   border-radius: 10%;
   margin-right: 40px;
+}
+.snake {
+  background: #090;
 }
 </style>
