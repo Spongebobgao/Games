@@ -69,9 +69,11 @@ export default {
     //check row, column and diagonals, n is row m is column
     checkForFive(n, m, nm, player) {
       //check for same row
-      this.checkForSameRow(n, m, nm, player);
+      this.checkForSameRow(nm, player);
+      //check the same column
+      this.checkForSameColumn(n, m, nm, player);
     },
-    checkForSameRow(n, m, nm, player) {
+    checkForSameRow(nm, player) {
       let count = 1;
       let temp = nm;
       if (player === "Player One") {
@@ -93,6 +95,40 @@ export default {
         while (++temp in this.pickedPieces && count < 5) {
           if (this.pickedPieces[temp].color === "orange") count++;
           else break;
+        }
+      }
+      if (count === 5) this.msg = player + " win";
+    },
+    checkForSameColumn(n, m, nm, player) {
+      let count = 1;
+      let temp = nm - 100;
+      if (player === "Player One") {
+        while (temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "black") {
+            count++;
+            temp -= 100;
+          } else break;
+        }
+        temp = nm + 100;
+        while (temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "black") {
+            count++;
+            temp += 100;
+          } else break;
+        }
+      } else {
+        while (temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "orange") {
+            count++;
+            temp -= 100;
+          } else break;
+        }
+        temp = nm + 100;
+        while (temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "orange") {
+            count++;
+            temp += 100;
+          } else break;
         }
       }
       if (count === 5) this.msg = player + " win";
