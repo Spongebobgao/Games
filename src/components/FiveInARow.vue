@@ -76,6 +76,8 @@ export default {
       this.checkForSameColumn(n, m, nm, player);
       //check the top-left to bottom right diagonal
       this.checkForTLBRDiagonal(nm, player);
+      //check the top-right to bottom left diagonal
+      this.checkForTRBLDiagonal(nm, player);
     },
     checkForSameRow(nm, player) {
       let count = 1;
@@ -147,19 +149,15 @@ export default {
           if (this.pickedPieces[temp].color === "black") {
             count++;
             temp -= 101;
-            console.log(count, "first count while loop");
           } else break;
         }
         temp = nm + 101;
-        console.log(temp, "second while loop temp");
         while (temp in this.pickedPieces && count < 5) {
           if (this.pickedPieces[temp].color === "black") {
             count++;
             temp += 101;
-            console.log(count, "secondcount while loop");
           } else break;
         }
-        console.log(count, "total black count");
       } else {
         while (temp in this.pickedPieces && count < 5) {
           if (this.pickedPieces[temp].color === "orange") {
@@ -172,6 +170,41 @@ export default {
           if (this.pickedPieces[temp].color === "orange") {
             count++;
             temp += 101;
+          } else break;
+        }
+      }
+      if (count === 5) this.msg = player + " win";
+    },
+    checkForTRBLDiagonal(nm, player) {
+      let count = 1;
+      nm = parseInt(nm);
+      let temp = nm - 99;
+      if (player === "Player One") {
+        while (temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "black") {
+            count++;
+            temp -= 99;
+          } else break;
+        }
+        temp = nm + 99;
+        while (temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "black") {
+            count++;
+            temp += 99;
+          } else break;
+        }
+      } else {
+        while (temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "orange") {
+            count++;
+            temp -= 99;
+          } else break;
+        }
+        temp = nm + 99;
+        while (temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "orange") {
+            count++;
+            temp += 99;
           } else break;
         }
       }
