@@ -25,6 +25,9 @@
       <v-btn @click="navigateTo('/fiveInARow')" text>
         <span class="mr-2">Five In A Row</span>
       </v-btn>
+      <v-btn @click="navigateTo('/snake')" text>
+        <span class="mr-2">Snake</span>
+      </v-btn>
     </v-app-bar>
 
     <v-content>

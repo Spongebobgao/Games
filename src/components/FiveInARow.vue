@@ -12,6 +12,7 @@
             </h3>
             <div id="myModal" class="modal">
               <div class="modal-content">
+                <span class="startOver" @click="startOver">Play Again</span>
                 <span @click="closeModal" class="close">&times;</span>
                 <p id="content"></p>
               </div>
@@ -44,6 +45,10 @@ export default {
     };
   },
   methods: {
+    startOver() {
+      this.reRender();
+      this.closeModal();
+    },
     closeModal() {
       document.getElementById("myModal").style.display = "none";
     },
@@ -53,6 +58,7 @@ export default {
       }
       this.pickedPieces = {};
       this.clicked = {};
+      this.player = "Player One";
     },
     placePiece(n, m) {
       let nm = `${n}${m}`;
@@ -181,12 +187,17 @@ h3 {
   margin: auto;
   padding: 20px;
   border: 1px solid #cc3300;
-  border-radius: 5%;
+  border-radius: 15%;
   width: 60%;
   color: white;
   font-size: 2rem;
-  justify-content: center;
+  text-align: center;
   font-family: "Alfa Slab One";
+}
+.startOver {
+  font-size: 1rem;
+  float: left;
+  cursor: pointer;
 }
 .close {
   color: white;
@@ -196,7 +207,9 @@ h3 {
 }
 
 .close:hover,
-.close:focus {
+.close:focus,
+.startOver:hover,
+.startOver:focus {
   color: #000;
   text-decoration: none;
   cursor: pointer;

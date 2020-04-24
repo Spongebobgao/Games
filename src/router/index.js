@@ -5,6 +5,7 @@ import Home from '@/components/Home.vue'
 import FlipCard from '@/components/FlipCard'
 import WhackTheMole from '@/components/WhackTheMole'
 import FiveInARow from '@/components/FiveInARow'
+import Snake from '@/components/Snake'
 
 
 Vue.use(Router)
@@ -26,6 +27,10 @@ const router = new Router({
     {
       path: '/fiveInARow',
       component: FiveInARow
+    },
+    {
+      path: '/snake',
+      component: Snake
     }
   ]
 })
