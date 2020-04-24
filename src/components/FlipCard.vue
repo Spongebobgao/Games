@@ -150,7 +150,16 @@ export default {
       }
     },
     reRender() {
-      window.location.reload();
+      this.cardChosen = [];
+      this.cardChosenId = [];
+      this.allChosenId = [];
+      this.score = 0;
+      this.msg = "Let's Play";
+      this.src = "";
+      document.getElementsByClassName("card").forEach(element => {
+        element.src = require("../assets/background.jpg");
+      });
+      this.allTheCards.sort(() => Math.random() - 0.5);
     }
   }
 };

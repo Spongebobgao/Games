@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-card color="#ff9f80" dark>
             <h3>
-              {{msg}}
+              Five In A row
               <br />Current Player:
               <span class="player">{{player}}</span>
               <span class="btn" @click="reRender">Play Again</span>
@@ -39,7 +39,6 @@ export default {
   data() {
     return {
       player: "Player One",
-      msg: "Five In A row",
       pickedPieces: {},
       clicked: {}
     };
@@ -49,7 +48,11 @@ export default {
       document.getElementById("myModal").style.display = "none";
     },
     reRender() {
-      window.location.reload();
+      for (var nm in this.clicked) {
+        document.getElementById(nm).style.background = "#ffece6";
+      }
+      this.pickedPieces = {};
+      this.clicked = {};
     },
     placePiece(n, m) {
       let nm = `${n}${m}`;
@@ -183,8 +186,7 @@ h3 {
   color: white;
   font-size: 2rem;
   justify-content: center;
-  font-family: "Lucida Console", Courier, monospace;
-  font-style: italic;
+  font-family: "Alfa Slab One";
 }
 .close {
   color: white;
