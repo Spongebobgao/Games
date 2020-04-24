@@ -19,7 +19,7 @@
         <div
           v-for="n in 13"
           :key="n+10"
-          :id="`${(n+10).toString()+(m+10)}`"
+          :id="`${(n+10)}${(m+10)}`"
           class="grid"
           @click="placePiece(n+10,m+10)"
         ></div>
@@ -34,9 +34,8 @@ export default {
     return {
       player: "Player One",
       msg: "Five In A row",
-      black: [],
-      orange: [],
-      clicked: []
+      pickedPieces: {},
+      clicked: {}
     };
   },
   methods: {
@@ -44,35 +43,60 @@ export default {
       window.location.reload();
     },
     placePiece(n, m) {
-      let nm = n.toString() + m;
-      if (!this.clicked.includes(nm)) {
+      let nm = `${n}${m}`;
+      console.log(nm);
+      if (!(nm in this.clicked)) {
         if (this.player === "Player One") {
-          document.getElementById(nm).classList.add("black");
-          this.clicked.push(nm);
-          this.black.push({ color: "black", id: nm, row: n, column: m });
-          this.player = "Player Two";
+          document.getElementById(nm).style.backgroundColor = "black";
+          this.clicked[nm] = { clicked: true };
+          this.pickedPieces[nm] = { color: "black", row: n, column: m };
           //everytime the player places a piece should check if there is a win
-          this.checkForFive(n, m);
+          this.player = "Player Two";
+          this.checkForFive(n, m, nm, "Player One");
         } else {
-          document.getElementById(nm).classList.add("orange");
-          this.clicked.push(nm);
-          this.orange.push({ color: "orange", id: nm, row: n, column: m });
+          document.getElementById(nm).style.backgroundColor = "orange";
+          this.clicked[nm] = { clicked: true };
+          this.pickedPieces[nm] = {
+            color: "orange",
+            row: n,
+            column: m
+          };
           this.player = "Player One";
-          this.checkForFive(n, m);
+          this.checkForFive(n, m, nm, "Player Two");
         }
       }
-    }
+    },
     //check row, column and diagonals, n is row m is column
-    // checkForFive(n, m) {
-    //   //check for row:left part
-    //   // if (this.player === "Player One") {
-    //   //   this.black.forEach(piece =>
-    //   //     console.log(piece.row, piece.column, piece.id)
-    //   //   );
-    //   //   console.log(m, "m");
-    //   // } else {
-    //   // }
-    // }
+    checkForFive(n, m, nm, player) {
+      //check for same row
+      this.checkForSameRow(n, m, nm, player);
+    },
+    checkForSameRow(n, m, nm, player) {
+      let count = 1;
+      let temp = nm;
+      if (player === "Player One") {
+        while (--temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "black") count++;
+          else break;
+        }
+        temp = nm;
+        while (++temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "black") count++;
+          else break;
+        }
+      } else {
+        while (--temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "orange") count++;
+          else break;
+        }
+        temp = nm;
+        while (++temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "orange") count++;
+          else break;
+        }
+      }
+      if (count === 5) this.msg = player + " win";
+    }
   }
 };
 </script>
