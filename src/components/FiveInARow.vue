@@ -22,7 +22,9 @@
           :id="`${(n+10)}${(m+10)}`"
           class="grid"
           @click="placePiece(n+10,m+10)"
-        ></div>
+        >
+          <span class="small">{{(n+10)}}{{m+10}}</span>
+        </div>
       </div>
     </div>
   </v-card>
@@ -72,6 +74,8 @@ export default {
       this.checkForSameRow(nm, player);
       //check the same column
       this.checkForSameColumn(n, m, nm, player);
+      //check the top-left to bottom right diagonal
+      this.checkForTLBRDiagonal(nm, player);
     },
     checkForSameRow(nm, player) {
       let count = 1;
@@ -101,6 +105,7 @@ export default {
     },
     checkForSameColumn(n, m, nm, player) {
       let count = 1;
+      nm = parseInt(nm);
       let temp = nm - 100;
       if (player === "Player One") {
         while (temp in this.pickedPieces && count < 5) {
@@ -132,12 +137,54 @@ export default {
         }
       }
       if (count === 5) this.msg = player + " win";
+    },
+    checkForTLBRDiagonal(nm, player) {
+      let count = 1;
+      nm = parseInt(nm);
+      let temp = nm - 101;
+      if (player === "Player One") {
+        while (temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "black") {
+            count++;
+            temp -= 101;
+            console.log(count, "first count while loop");
+          } else break;
+        }
+        temp = nm + 101;
+        console.log(temp, "second while loop temp");
+        while (temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "black") {
+            count++;
+            temp += 101;
+            console.log(count, "secondcount while loop");
+          } else break;
+        }
+        console.log(count, "total black count");
+      } else {
+        while (temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "orange") {
+            count++;
+            temp -= 101;
+          } else break;
+        }
+        temp = nm + 101;
+        while (temp in this.pickedPieces && count < 5) {
+          if (this.pickedPieces[temp].color === "orange") {
+            count++;
+            temp += 101;
+          } else break;
+        }
+      }
+      if (count === 5) this.msg = player + " win";
     }
   }
 };
 </script>
 
 <style scoped>
+.small {
+  font-size: 0.8rem;
+}
 h3 {
   margin-left: 10px;
 }
