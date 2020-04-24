@@ -22,9 +22,7 @@
           :id="`${(n+10)}${(m+10)}`"
           class="grid"
           @click="placePiece(n+10,m+10)"
-        >
-          <span class="small">{{(n+10)}}{{m+10}}</span>
-        </div>
+        ></div>
       </div>
     </div>
   </v-card>
@@ -46,15 +44,14 @@ export default {
     },
     placePiece(n, m) {
       let nm = `${n}${m}`;
-      console.log(nm);
       if (!(nm in this.clicked)) {
         if (this.player === "Player One") {
           document.getElementById(nm).style.backgroundColor = "black";
           this.clicked[nm] = { clicked: true };
-          this.pickedPieces[nm] = { color: "black", row: n, column: m };
+          this.pickedPieces[nm] = { color: "black" };
           //everytime the player places a piece should check if there is a win
           this.player = "Player Two";
-          this.checkForFive(n, m, nm, "Player One");
+          this.checkForFive(nm, "Player One");
         } else {
           document.getElementById(nm).style.backgroundColor = "orange";
           this.clicked[nm] = { clicked: true };
@@ -64,147 +61,51 @@ export default {
             column: m
           };
           this.player = "Player One";
-          this.checkForFive(n, m, nm, "Player Two");
+          this.checkForFive(nm, "Player Two");
         }
       }
     },
     //check row, column and diagonals, n is row m is column
-    checkForFive(n, m, nm, player) {
+    checkForFive(nm, player) {
       //check for same row
-      this.checkForSameRow(nm, player);
+      this.fullCheck(nm, player, 1);
       //check the same column
-      this.checkForSameColumn(n, m, nm, player);
+      this.fullCheck(nm, player, 100);
       //check the top-left to bottom right diagonal
-      this.checkForTLBRDiagonal(nm, player);
+      this.fullCheck(nm, player, 101);
       //check the top-right to bottom left diagonal
-      this.checkForTRBLDiagonal(nm, player);
+      this.fullCheck(nm, player, 99);
     },
-    checkForSameRow(nm, player) {
-      let count = 1;
-      let temp = nm;
-      if (player === "Player One") {
-        while (--temp in this.pickedPieces && count < 5) {
-          if (this.pickedPieces[temp].color === "black") count++;
-          else break;
-        }
-        temp = nm;
-        while (++temp in this.pickedPieces && count < 5) {
-          if (this.pickedPieces[temp].color === "black") count++;
-          else break;
-        }
-      } else {
-        while (--temp in this.pickedPieces && count < 5) {
-          if (this.pickedPieces[temp].color === "orange") count++;
-          else break;
-        }
-        temp = nm;
-        while (++temp in this.pickedPieces && count < 5) {
-          if (this.pickedPieces[temp].color === "orange") count++;
-          else break;
-        }
-      }
-      if (count === 5) this.msg = player + " win";
-    },
-    checkForSameColumn(n, m, nm, player) {
+    fullCheck(nm, player, offset) {
       let count = 1;
       nm = parseInt(nm);
-      let temp = nm - 100;
+      let temp = nm - offset;
       if (player === "Player One") {
         while (temp in this.pickedPieces && count < 5) {
           if (this.pickedPieces[temp].color === "black") {
             count++;
-            temp -= 100;
+            temp -= offset;
           } else break;
         }
-        temp = nm + 100;
+        temp = nm + offset;
         while (temp in this.pickedPieces && count < 5) {
           if (this.pickedPieces[temp].color === "black") {
             count++;
-            temp += 100;
+            temp += offset;
           } else break;
         }
       } else {
         while (temp in this.pickedPieces && count < 5) {
           if (this.pickedPieces[temp].color === "orange") {
             count++;
-            temp -= 100;
+            temp -= offset;
           } else break;
         }
-        temp = nm + 100;
+        temp = nm + offset;
         while (temp in this.pickedPieces && count < 5) {
           if (this.pickedPieces[temp].color === "orange") {
             count++;
-            temp += 100;
-          } else break;
-        }
-      }
-      if (count === 5) this.msg = player + " win";
-    },
-    checkForTLBRDiagonal(nm, player) {
-      let count = 1;
-      nm = parseInt(nm);
-      let temp = nm - 101;
-      if (player === "Player One") {
-        while (temp in this.pickedPieces && count < 5) {
-          if (this.pickedPieces[temp].color === "black") {
-            count++;
-            temp -= 101;
-          } else break;
-        }
-        temp = nm + 101;
-        while (temp in this.pickedPieces && count < 5) {
-          if (this.pickedPieces[temp].color === "black") {
-            count++;
-            temp += 101;
-          } else break;
-        }
-      } else {
-        while (temp in this.pickedPieces && count < 5) {
-          if (this.pickedPieces[temp].color === "orange") {
-            count++;
-            temp -= 101;
-          } else break;
-        }
-        temp = nm + 101;
-        while (temp in this.pickedPieces && count < 5) {
-          if (this.pickedPieces[temp].color === "orange") {
-            count++;
-            temp += 101;
-          } else break;
-        }
-      }
-      if (count === 5) this.msg = player + " win";
-    },
-    checkForTRBLDiagonal(nm, player) {
-      let count = 1;
-      nm = parseInt(nm);
-      let temp = nm - 99;
-      if (player === "Player One") {
-        while (temp in this.pickedPieces && count < 5) {
-          if (this.pickedPieces[temp].color === "black") {
-            count++;
-            temp -= 99;
-          } else break;
-        }
-        temp = nm + 99;
-        while (temp in this.pickedPieces && count < 5) {
-          if (this.pickedPieces[temp].color === "black") {
-            count++;
-            temp += 99;
-          } else break;
-        }
-      } else {
-        while (temp in this.pickedPieces && count < 5) {
-          if (this.pickedPieces[temp].color === "orange") {
-            count++;
-            temp -= 99;
-          } else break;
-        }
-        temp = nm + 99;
-        while (temp in this.pickedPieces && count < 5) {
-          if (this.pickedPieces[temp].color === "orange") {
-            count++;
-            temp += 99;
+            temp += offset;
           } else break;
         }
       }
@@ -215,9 +116,6 @@ export default {
 </script>
 
 <style scoped>
-.small {
-  font-size: 0.8rem;
-}
 h3 {
   margin-left: 10px;
 }
@@ -244,13 +142,7 @@ h3 {
   border-radius: 10%;
 }
 /* the color of player 1 is black */
-.black {
-  background: black;
-}
 /* the color of player 2 is orange */
-.orange {
-  background: orange;
-}
 .player {
   font-style: italic;
   color: #cc3300;
