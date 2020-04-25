@@ -34,12 +34,11 @@
 export default {
   data() {
     return {
-      snake: [3622, 3623, 3624, 3625, 3626],
-      turns: {},
-      interval: 0,
-      currentDirection: "",
-      offset: 0,
-      priority: 0,
+      snake: [3622, 3623, 3624, 3625, 3626, 3627, 3628],
+      snakeInterval: null,
+      collisionInterval: null,
+      currentDirection: "ArrowRight",
+      offset: 1,
       collision: false
     };
   },
@@ -53,19 +52,21 @@ export default {
     },
     startGame() {
       this.resetData();
-      this.setIntervals(this.currentDirection, this.offset);
       window.addEventListener("keydown", this.controlSnake);
     },
     resetData() {
       this.removeSnake();
-      this.snake = [3622, 3623, 3624, 3625, 3626];
-      this.turns = {};
+      this.snake = [3622, 3623, 3624, 3625, 3626, 3627, 3628];
       this.currentDirection = "ArrowRight";
       this.offset = 1;
-      this.priority = 0;
       this.collision = false;
-      clearInterval(this.interval);
-      this.inter = 0;
+      this.snakeInterval = null;
+      this.setSnakeIntervals("ArrowRight", 1);
+      this.collisionInterval = setInterval(
+        this.checkCollision,
+        1000,
+        this.offset
+      );
       this.snake.forEach(snake =>
         document.getElementById(snake).classList.add("snake")
       );
@@ -74,17 +75,17 @@ export default {
         .classList.add("snakeHead");
     },
     removeSnake() {
-      document
-        .getElementById(this.snake[this.snake.length - 1])
-        .classList.remove("snakeHead");
+      clearInterval(this.snakeInterval);
+      clearInterval(this.collisionInterval);
       this.snake.forEach(snake =>
-        document.getElementById(snake).classList.remove("snake")
+        document
+          .getElementById(snake)
+          .classList.remove("snake", "snakeHead", "red")
       );
     },
     controlSnake(e) {
-      clearInterval(this.interval);
+      //go to the right
       if (!this.collision) {
-        //go to the right
         if (e.code === "ArrowRight") {
           if (this.currentDirection != "ArrowLeft") {
             this.allDirections("ArrowRight", 1);
@@ -108,43 +109,69 @@ export default {
             this.allDirections("ArrowDown", 100);
           }
         }
-        this.setIntervals(this.currentDirection, this.offset);
       }
     },
     allDirections(Arrow, offset) {
-      this.collision = this.checkCollision(offset);
+      clearInterval(this.snakeInterval);
+      clearInterval(this.collisionInterval);
+      this.checkCollision(offset);
       if (this.collision) {
+        this.killSnake(offset);
         document.getElementById("content").innerHTML = "Game Over";
         document.getElementById("myModal").style.display = "block";
-        clearInterval(this.interval);
       } else {
-        this.removeSnake();
-        this.snake.shift();
-        this.snake.forEach(snake =>
-          document.getElementById(snake).classList.add("snake")
-        );
+        this.collision = false;
+        let lastElementId = this.snake[this.snake.length - 1];
+        document.getElementById(this.snake.shift()).classList.remove("snake");
+        document.getElementById(lastElementId).classList.remove("snakeHead");
+        document.getElementById(lastElementId).classList.add("snake");
         this.snake.push(this.snake[this.snake.length - 1] + offset);
         document
           .getElementById(this.snake[this.snake.length - 1])
           .classList.add("snakeHead");
         this.currentDirection = Arrow;
         this.offset = offset;
+        this.setSnakeIntervals(this.currentDirection, this.offset);
+        this.collisionInterval = setInterval(
+          this.checkCollision,
+          1000,
+          this.offset
+        );
       }
     },
-    setIntervals(Arrow, offset) {
-      this.interval = setInterval(this.allDirections, 1000, Arrow, offset);
+    setSnakeIntervals(Arrow, offset) {
+      this.snakeInterval = setInterval(this.allDirections, 1000, Arrow, offset);
     },
     checkCollision(offset) {
-      //check if there is collision if move head
+      //check if there is collision if move ahead
       let head = this.snake[this.snake.length - 1] + offset;
-      let tail = this.snake[1];
-      return (
-        head === tail ||
+      let smallSnake = this.snake.slice(1, this.snake.length - 2);
+      if (
+        smallSnake.includes(head) ||
         head / 100 < 11 ||
         head / 100 > 40 ||
         head % 100 < 11 ||
         head % 100 > 52
-      );
+      ) {
+        this.collision = true;
+      }
+    },
+    killSnake(offset) {
+      let head = this.snake[this.snake.length - 1] + offset;
+      if (
+        head / 100 < 11 ||
+        head / 100 > 40 ||
+        head % 100 < 11 ||
+        head % 100 > 52
+      ) {
+        document
+          .getElementById(this.snake[this.snake.length - 1])
+          .classList.add("red");
+      } else {
+        document
+          .getElementById(this.snake[this.snake.length - 1] + offset)
+          .classList.add("red");
+      }
     }
   }
 };
@@ -179,6 +206,9 @@ h3 {
   padding: 2px;
   border-radius: 10%;
   margin-right: 40px;
+}
+.red {
+  background-color: red;
 }
 .snake {
   background: #090;
