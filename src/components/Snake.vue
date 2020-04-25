@@ -37,6 +37,7 @@ export default {
       snake: [3622, 3623, 3624, 3625, 3626, 3627, 3628],
       snakeInterval: null,
       collisionInterval: null,
+      randomInterval: null,
       currentDirection: "ArrowRight",
       offset: 1,
       collision: false
@@ -67,6 +68,7 @@ export default {
         1000,
         this.offset
       );
+      this.randomInterval = setInterval(this.randomPosition, 1000);
       this.snake.forEach(snake =>
         document.getElementById(snake).classList.add("snake")
       );
@@ -77,11 +79,24 @@ export default {
     removeSnake() {
       clearInterval(this.snakeInterval);
       clearInterval(this.collisionInterval);
+      clearInterval(this.randomInterval);
       this.snake.forEach(snake =>
         document
           .getElementById(snake)
           .classList.remove("snake", "snakeHead", "red")
       );
+    },
+    randomPosition() {
+      //id: 1111-3952
+      let row = Math.floor(Math.random() * 29) + 11;
+      let col = Math.floor(Math.random() * 42) + 11;
+      let position = `${row}${col}`;
+      while (this.snake.includes(position)) {
+        row = Math.floor(Math.random() * 29) + 11;
+        col = Math.floor(Math.random() * 42) + 11;
+        position = `${row}${col}`;
+      }
+      document.getElementById(position).classList.add("purple");
     },
     controlSnake(e) {
       //go to the right
@@ -116,6 +131,7 @@ export default {
       clearInterval(this.collisionInterval);
       this.checkCollision(offset);
       if (this.collision) {
+        clearInterval(this.randomInterval);
         this.killSnake(offset);
         document.getElementById("content").innerHTML = "Game Over";
         document.getElementById("myModal").style.display = "block";
@@ -209,6 +225,9 @@ h3 {
 }
 .red {
   background-color: red;
+}
+.purple {
+  background-color: purple;
 }
 .snake {
   background: #090;
