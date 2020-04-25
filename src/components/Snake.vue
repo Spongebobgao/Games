@@ -31,37 +31,33 @@ export default {
       turns: {},
       interval: 0,
       currentDirection: "",
-      priority: 0,
-      lastIndexOfSnake: 0
+      offset: 0,
+      priority: 0
     };
   },
   methods: {
     startGame() {
       this.resetData();
+      this.setIntervals(this.currentDirection, this.offset);
       window.addEventListener("keydown", this.controlSnake);
     },
     resetData() {
       this.snake = [3622, 3623, 3624, 3625, 3626];
       this.turns = {};
-      this.currentDirection = "";
+      this.currentDirection = "ArrowRight";
+      this.offset = 1;
       this.priority = 0;
-      this.lastIndexOfSnake = this.snake.length - 1;
       clearInterval(this.interval);
       this.inter = 0;
       this.snake.forEach(snake =>
         document.getElementById(snake).classList.add("snake")
       );
       document
-        .getElementById(this.snake[this.lastIndexOfSnake])
+        .getElementById(this.snake[this.snake.length - 1])
         .classList.add("snakeHead");
     },
     controlSnake(e) {
-      document
-        .getElementById(this.snake[this.lastIndexOfSnake])
-        .classList.remove("snakeHead");
-      this.snake.forEach(snake =>
-        document.getElementById(snake).classList.remove("snake")
-      );
+      clearInterval(this.interval);
       //go to the right
       if (e.code === "ArrowRight") {
         if (this.currentDirection != "ArrowLeft") {
@@ -86,19 +82,28 @@ export default {
           this.allDirections("ArrowDown", 100);
         }
       }
+      this.setIntervals(this.currentDirection, this.offset);
     },
     allDirections(Arrow, offset) {
-      this.currentDirection = Arrow;
+      document
+        .getElementById(this.snake[this.snake.length - 1])
+        .classList.remove("snakeHead");
+      this.snake.forEach(snake =>
+        document.getElementById(snake).classList.remove("snake")
+      );
       this.snake.shift();
-      this.lastIndexOfSnake--;
       this.snake.forEach(snake =>
         document.getElementById(snake).classList.add("snake")
       );
-      this.snake.push(this.snake[this.lastIndexOfSnake] + offset);
-      this.lastIndexOfSnake++;
+      this.snake.push(this.snake[this.snake.length - 1] + offset);
       document
-        .getElementById(this.snake[this.lastIndexOfSnake])
+        .getElementById(this.snake[this.snake.length - 1])
         .classList.add("snakeHead");
+      this.currentDirection = Arrow;
+      this.offset = offset;
+    },
+    setIntervals(Arrow, offset) {
+      this.interval = setInterval(this.allDirections, 1000, Arrow, offset);
     }
   }
 };
