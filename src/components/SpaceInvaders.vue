@@ -11,13 +11,13 @@
               <span>Score: {{score}}</span>
               <span class="btn" @click="startGame">Start Game</span>
             </h3>
-            <div id="myModal" class="modal">
+            <!-- <div id="myModal" class="modal">
               <div class="modal-content">
                 <span class="startOver" @click="startOver">Play Again</span>
                 <span @click="closeModal" class="close">&times;</span>
                 <p id="content"></p>
-              </div>
-            </div>
+            </div>-->
+            <!-- </div> -->
           </v-card>
         </v-col>
       </v-row>
@@ -33,22 +33,237 @@
 export default {
   data() {
     return {
-      weapon: 2711
+      weapon: 0,
+      firstRow: [],
+      secondRow: [],
+      thirdRow: [],
+      fourthRow: [],
+      fifthRow: [],
+      weaponInterval: null,
+      invaderInterval: null,
+      score: 0,
+      currentDirection: "right",
+      movedDown: false
     };
   },
   methods: {
     startGame() {
-      document.getElementById(this.weapon).classList.add("weapon");
+      this.resetData();
       window.addEventListener("keydown", this.moveWeapon);
+    },
+    resetData() {
+      this.movedDown = true;
+      if (this.weapon != 0)
+        document.getElementById(this.weapon).classList.remove("weapon");
+      this.weapon = `${27}${Math.floor(Math.random() * 16) + 11}`;
+      document.getElementById(this.weapon).classList.add("weapon");
+      for (let i = 0; i < 16; i++) {
+        this.firstRow[i] = `${11}${i + 11}`;
+        this.secondRow[i] = `${12}${i + 11}`;
+        this.thirdRow[i] = `${13}${i + 11}`;
+        this.fourthRow[i] = `${14}${i + 11}`;
+        this.fifthRow[i] = `${15}${i + 11}`;
+      }
+      this.firstRow.forEach(one =>
+        document.getElementById(one).classList.add("blacks")
+      );
+      this.secondRow.forEach(one =>
+        document.getElementById(one).classList.add("purples")
+      );
+      this.thirdRow.forEach(one =>
+        document.getElementById(one).classList.add("blues")
+      );
+      this.fourthRow.forEach(one =>
+        document.getElementById(one).classList.add("reds")
+      );
+      this.fifthRow.forEach(one =>
+        document.getElementById(one).classList.add("greens")
+      );
+      this.currentDirection = "right";
+      this.invaderInterval = setInterval(this.moveInvaders, 1000);
     },
     moveWeapon(e) {
       if (e.code === "ArrowLeft") {
-        document.getElementById(this.weapon--).classList.remove("weapon");
-        document.getElementById(this.weapon).classList.add("weapon");
+        if (this.weapon % 100 > 11) {
+          document.getElementById(this.weapon--).classList.remove("weapon");
+          document.getElementById(this.weapon).classList.add("weapon");
+        }
       }
       if (e.code === "ArrowRight") {
-        document.getElementById(this.weapon++).classList.remove("weapon");
-        document.getElementById(this.weapon).classList.add("weapon");
+        if (this.weapon % 100 < 36) {
+          document.getElementById(this.weapon++).classList.remove("weapon");
+          document.getElementById(this.weapon).classList.add("weapon");
+        }
+      }
+    },
+    moveInvaders() {
+      if (this.currentDirection === "right") {
+        if (
+          this.firstRow[0] % 100 === 11 &&
+          this.firstRow[0] / 100 != 11 &&
+          !this.movedDown
+        ) {
+          this.movedDown = true;
+          this.firstRow.forEach(function(one) {
+            document.getElementById(one).classList.remove("blacks");
+          });
+          this.firstRow = this.firstRow.map(one => (one = parseInt(one) + 100));
+          console.log(this.firstRow.toString());
+          this.firstRow.forEach(one =>
+            document.getElementById(one).classList.add("blacks")
+          );
+          this.secondRow.forEach(one => {
+            document.getElementById(one).classList.remove("purples");
+          });
+          this.secondRow = this.secondRow.map(
+            one => (one = parseInt(one) + 100)
+          );
+          this.secondRow.forEach(one =>
+            document.getElementById(one).classList.add("purples")
+          );
+          this.thirdRow.forEach(one => {
+            document.getElementById(one).classList.remove("blues");
+          });
+          this.thirdRow = this.thirdRow.map(one => (one = parseInt(one) + 100));
+          this.thirdRow.forEach(one =>
+            document.getElementById(one).classList.add("blues")
+          );
+          this.fourthRow.forEach(one => {
+            document.getElementById(one).classList.remove("reds");
+          });
+          this.fourthRow = this.fourthRow.map(
+            one => (one = parseInt(one) + 100)
+          );
+          this.fourthRow.forEach(one =>
+            document.getElementById(one).classList.add("reds")
+          );
+          this.fifthRow.forEach(one => {
+            document.getElementById(one).classList.remove("greens");
+          });
+          this.fifthRow = this.fifthRow.map(one => (one = parseInt(one) + 100));
+          this.fifthRow.forEach(one =>
+            document.getElementById(one).classList.add("greens")
+          );
+        } else {
+          document
+            .getElementById(this.firstRow.shift())
+            .classList.remove("blacks");
+          let newElement =
+            parseInt(this.firstRow[this.firstRow.length - 1]) + 1;
+          this.firstRow.push(newElement);
+          document.getElementById(newElement).classList.add("blacks");
+          document
+            .getElementById(this.secondRow.shift())
+            .classList.remove("purples");
+          newElement = parseInt(this.secondRow[this.secondRow.length - 1]) + 1;
+          this.secondRow.push(newElement);
+          document.getElementById(newElement).classList.add("purples");
+          document
+            .getElementById(this.thirdRow.shift())
+            .classList.remove("blues");
+          newElement = parseInt(this.thirdRow[this.thirdRow.length - 1]) + 1;
+          this.thirdRow.push(newElement);
+          document.getElementById(newElement).classList.add("blues");
+          document
+            .getElementById(this.fourthRow.shift())
+            .classList.remove("reds");
+          newElement = parseInt(this.fourthRow[this.fourthRow.length - 1]) + 1;
+          this.fourthRow.push(newElement);
+          document.getElementById(newElement).classList.add("reds");
+          document
+            .getElementById(this.fifthRow.shift())
+            .classList.remove("greens");
+          newElement = parseInt(this.fifthRow[this.fifthRow.length - 1]) + 1;
+          this.fifthRow.push(newElement);
+          document.getElementById(newElement).classList.add("greens");
+          console.log(newElement);
+          if (newElement % 100 === 36) {
+            this.currentDirection = "left";
+            this.movedDown = false;
+          }
+        }
+      }
+      if (this.currentDirection === "left") {
+        if (
+          this.firstRow[this.firstRow.length - 1] % 100 === 36 &&
+          !this.movedDown
+        ) {
+          this.movedDown = true;
+          this.firstRow.forEach(one => {
+            document.getElementById(one).classList.remove("blacks");
+          });
+          this.firstRow = this.firstRow.map(one => (one = parseInt(one) + 100));
+          this.firstRow.forEach(one =>
+            document.getElementById(one).classList.add("blacks")
+          );
+          this.secondRow.forEach(one => {
+            document.getElementById(one).classList.remove("purples");
+          });
+          this.secondRow = this.secondRow.map(
+            one => (one = parseInt(one) + 100)
+          );
+          this.secondRow.forEach(one =>
+            document.getElementById(one).classList.add("purples")
+          );
+          this.thirdRow.forEach(one => {
+            document.getElementById(one).classList.remove("blues");
+          });
+          this.thirdRow = this.thirdRow.map(one => (one = parseInt(one) + 100));
+          this.thirdRow.forEach(one =>
+            document.getElementById(one).classList.add("blues")
+          );
+          this.fourthRow.forEach(one => {
+            document.getElementById(one).classList.remove("reds");
+          });
+          this.fourthRow = this.fourthRow.map(
+            one => (one = parseInt(one) + 100)
+          );
+          this.fourthRow.forEach(one =>
+            document.getElementById(one).classList.add("reds")
+          );
+          this.fifthRow.forEach(one => {
+            document.getElementById(one).classList.remove("greens");
+          });
+          this.fifthRow = this.fifthRow.map(one => (one = parseInt(one) + 100));
+          this.fifthRow.forEach(one =>
+            document.getElementById(one).classList.add("greens")
+          );
+        } else {
+          document
+            .getElementById(this.firstRow.pop())
+            .classList.remove("blacks");
+          let newElement = parseInt(this.firstRow[0]) - 1;
+          this.firstRow.unshift(newElement);
+          document.getElementById(newElement).classList.add("blacks");
+          document
+            .getElementById(this.secondRow.pop())
+            .classList.remove("purples");
+          newElement = parseInt(this.secondRow[0]) - 1;
+          this.secondRow.unshift(newElement);
+          document.getElementById(newElement).classList.add("purples");
+          document
+            .getElementById(this.thirdRow.pop())
+            .classList.remove("blues");
+          newElement = parseInt(this.thirdRow[0]) - 1;
+          this.thirdRow.unshift(newElement);
+          document.getElementById(newElement).classList.add("blues");
+          document
+            .getElementById(this.fourthRow.pop())
+            .classList.remove("reds");
+          newElement = parseInt(this.fourthRow[0]) - 1;
+          this.fourthRow.unshift(newElement);
+          document.getElementById(newElement).classList.add("reds");
+          document
+            .getElementById(this.fifthRow.pop())
+            .classList.remove("greens");
+          newElement = parseInt(this.fifthRow[0]) - 1;
+          this.fifthRow.unshift(newElement);
+          document.getElementById(newElement).classList.add("greens");
+          if (newElement % 100 === 11) {
+            this.currentDirection = "right";
+            this.movedDown = false;
+          }
+        }
       }
     }
   }
@@ -104,6 +319,9 @@ h3 {
 .blacks {
   background-image: url("../assets/black.png");
 }
+.lazer {
+  background-image: url("../assets/lazer.png");
+}
 .modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
@@ -126,7 +344,7 @@ h3 {
   color: white;
   font-size: 2rem;
   text-align: center;
-  font-family: "Alfa Slab One";
+  font-family: "Alfa Slab one";
 }
 .startOver {
   font-size: 1rem;
