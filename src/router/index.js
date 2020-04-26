@@ -6,6 +6,7 @@ import FlipCard from '@/components/FlipCard'
 import WhackTheMole from '@/components/WhackTheMole'
 import FiveInARow from '@/components/FiveInARow'
 import Snake from '@/components/Snake'
+import SpaceInvaders from '@/components/SpaceInvaders'
 
 
 Vue.use(Router)
@@ -31,6 +32,10 @@ const router = new Router({
     {
       path: '/snake',
       component: Snake
+    },
+    {
+      path: '/spaceInvaders',
+      component: SpaceInvaders
     }
   ]
 })

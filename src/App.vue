@@ -28,6 +28,9 @@
       <v-btn @click="navigateTo('/snake')" text>
         <span class="mr-2">Snake</span>
       </v-btn>
+      <v-btn @click="navigateTo('/spaceInvaders')" text>
+        <span class="mr-2">Space Invaders</span>
+      </v-btn>
     </v-app-bar>
 
     <v-content>
