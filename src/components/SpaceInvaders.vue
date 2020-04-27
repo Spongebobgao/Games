@@ -34,11 +34,7 @@ export default {
   data() {
     return {
       weapon: 0,
-      firstRow: [],
-      secondRow: [],
-      thirdRow: [],
-      fourthRow: [],
-      fifthRow: [],
+      invaders: { blacks: [], purples: [], blues: [], reds: [], greens: [] },
       weaponInterval: null,
       invaderInterval: null,
       score: 0,
@@ -53,32 +49,30 @@ export default {
     },
     resetData() {
       this.movedDown = true;
+      clearInterval(this.invaderInterval);
       if (this.weapon != 0)
         document.getElementById(this.weapon).classList.remove("weapon");
       this.weapon = `${27}${Math.floor(Math.random() * 16) + 11}`;
       document.getElementById(this.weapon).classList.add("weapon");
-      for (let i = 0; i < 16; i++) {
-        this.firstRow[i] = `${11}${i + 11}`;
-        this.secondRow[i] = `${12}${i + 11}`;
-        this.thirdRow[i] = `${13}${i + 11}`;
-        this.fourthRow[i] = `${14}${i + 11}`;
-        this.fifthRow[i] = `${15}${i + 11}`;
+      if (this.invaders.blacks.length > 0) {
+        for (let color in this.invaders) {
+          this.invaders[color].forEach(one =>
+            document.getElementById(one).classList.remove(color)
+          );
+        }
       }
-      this.firstRow.forEach(one =>
-        document.getElementById(one).classList.add("blacks")
-      );
-      this.secondRow.forEach(one =>
-        document.getElementById(one).classList.add("purples")
-      );
-      this.thirdRow.forEach(one =>
-        document.getElementById(one).classList.add("blues")
-      );
-      this.fourthRow.forEach(one =>
-        document.getElementById(one).classList.add("reds")
-      );
-      this.fifthRow.forEach(one =>
-        document.getElementById(one).classList.add("greens")
-      );
+      for (let i = 0; i < 16; i++) {
+        this.invaders.blacks[i] = `${11}${i + 11}`;
+        this.invaders.purples[i] = `${12}${i + 11}`;
+        this.invaders.blues[i] = `${13}${i + 11}`;
+        this.invaders.reds[i] = `${14}${i + 11}`;
+        this.invaders.greens[i] = `${15}${i + 11}`;
+      }
+      for (let color in this.invaders) {
+        this.invaders[color].forEach(one =>
+          document.getElementById(one).classList.add(color)
+        );
+      }
       this.currentDirection = "right";
       this.invaderInterval = setInterval(this.moveInvaders, 1000);
     },
@@ -96,59 +90,55 @@ export default {
         }
       }
     },
-    moveRowDown(array, color) {
-      array.forEach(one =>
-        document.getElementById(one).classList.remove(color)
-      );
-      array = array.map(one => (one = parseInt(one) + 100));
-      array.forEach(one => document.getElementById(one).classList.add(color));
-      return array;
-    },
     moveAllRowsDown() {
-      this.firstRow = this.moveRowDown(this.firstRow, "blacks");
-      this.secondRow = this.moveRowDown(this.secondRow, "purples");
-      this.thirdRow = this.moveRowDown(this.thirdRow, "blues");
-      this.fourthRow = this.moveRowDown(this.fourthRow, "reds");
-      this.fifthRow = this.moveRowDown(this.fifthRow, "greens");
-    },
-    moveRowToLeft(array, color) {
-      document.getElementById(array.pop()).classList.remove(color);
-      let newElement = parseInt(array[0]) - 1;
-      array.unshift(newElement);
-      document.getElementById(newElement).classList.add(color);
+      for (let color in this.invaders) {
+        this.invaders[color].forEach(one =>
+          document.getElementById(one).classList.remove(color)
+        );
+        this.invaders[color] = this.invaders[color].map(
+          one => (one = parseInt(one) + 100)
+        );
+        this.invaders[color].forEach(one =>
+          document.getElementById(one).classList.add(color)
+        );
+      }
     },
     moveAllRowsToLeft() {
-      this.moveRowToLeft(this.firstRow, "blacks");
-      this.moveRowToLeft(this.secondRow, "purples");
-      this.moveRowToLeft(this.thirdRow, "blues");
-      this.moveRowToLeft(this.fourthRow, "reds");
-      this.moveRowToLeft(this.fifthRow, "greens");
-    },
-    moveRowToRight(array, color) {
-      document.getElementById(array.shift()).classList.remove(color);
-      let newElement = parseInt(array[array.length - 1]) + 1;
-      array.push(newElement);
-      document.getElementById(newElement).classList.add(color);
+      for (let color in this.invaders) {
+        document
+          .getElementById(this.invaders[color].pop())
+          .classList.remove(color);
+        let newElement = parseInt(this.invaders[color][0]) - 1;
+        this.invaders[color].unshift(newElement);
+        document.getElementById(newElement).classList.add(color);
+      }
     },
     moveAllRowsToRight() {
-      this.moveRowToRight(this.firstRow, "blacks");
-      this.moveRowToRight(this.secondRow, "purples");
-      this.moveRowToRight(this.thirdRow, "blues");
-      this.moveRowToRight(this.fourthRow, "reds");
-      this.moveRowToRight(this.fifthRow, "greens");
+      for (let color in this.invaders) {
+        document
+          .getElementById(this.invaders[color].shift())
+          .classList.remove(color);
+        let newElement =
+          parseInt(this.invaders[color][this.invaders[color].length - 1]) + 1;
+        this.invaders[color].push(newElement);
+        document.getElementById(newElement).classList.add(color);
+      }
     },
     moveInvaders() {
       if (this.currentDirection === "right") {
         if (
-          this.firstRow[0] % 100 === 11 &&
-          this.firstRow[0] / 100 != 11 &&
+          this.invaders.blacks[0] % 100 === 11 &&
+          this.invaders.blacks[0] / 100 != 11 &&
           !this.movedDown
         ) {
           this.movedDown = true;
           this.moveAllRowsDown();
         } else {
           this.moveAllRowsToRight();
-          if (this.firstRow[this.firstRow.length - 1] % 100 === 36) {
+          if (
+            this.invaders.blacks[this.invaders.blacks.length - 1] % 100 ===
+            36
+          ) {
             this.currentDirection = "left";
             this.movedDown = false;
           }
@@ -156,14 +146,14 @@ export default {
       }
       if (this.currentDirection === "left") {
         if (
-          this.firstRow[this.firstRow.length - 1] % 100 === 36 &&
+          this.invaders.blacks[this.invaders.blacks.length - 1] % 100 === 36 &&
           !this.movedDown
         ) {
           this.movedDown = true;
           this.moveAllRowsDown();
         } else {
           this.moveAllRowsToLeft();
-          if (this.firstRow[0] % 100 === 11) {
+          if (this.invaders.blacks[0] % 100 === 11) {
             this.currentDirection = "right";
             this.movedDown = false;
           }

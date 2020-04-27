@@ -9,6 +9,7 @@ import Snake from '@/components/Snake'
 import SpaceInvaders from '@/components/SpaceInvaders'
 
 
+
 Vue.use(Router)
 
 const router = new Router({
