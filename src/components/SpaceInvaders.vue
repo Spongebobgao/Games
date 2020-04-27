@@ -96,6 +96,14 @@ export default {
         }
       }
     },
+    moveRowDown(array, color) {
+      array.forEach(one =>
+        document.getElementById(one).classList.remove(color)
+      );
+      array = array.map(one => (one = parseInt(one) + 100));
+      array.forEach(one => document.getElementById(one).classList.add(color));
+      return array;
+    },
     moveInvaders() {
       if (this.currentDirection === "right") {
         if (
@@ -104,46 +112,11 @@ export default {
           !this.movedDown
         ) {
           this.movedDown = true;
-          this.firstRow.forEach(function(one) {
-            document.getElementById(one).classList.remove("blacks");
-          });
-          this.firstRow = this.firstRow.map(one => (one = parseInt(one) + 100));
-          console.log(this.firstRow.toString());
-          this.firstRow.forEach(one =>
-            document.getElementById(one).classList.add("blacks")
-          );
-          this.secondRow.forEach(one => {
-            document.getElementById(one).classList.remove("purples");
-          });
-          this.secondRow = this.secondRow.map(
-            one => (one = parseInt(one) + 100)
-          );
-          this.secondRow.forEach(one =>
-            document.getElementById(one).classList.add("purples")
-          );
-          this.thirdRow.forEach(one => {
-            document.getElementById(one).classList.remove("blues");
-          });
-          this.thirdRow = this.thirdRow.map(one => (one = parseInt(one) + 100));
-          this.thirdRow.forEach(one =>
-            document.getElementById(one).classList.add("blues")
-          );
-          this.fourthRow.forEach(one => {
-            document.getElementById(one).classList.remove("reds");
-          });
-          this.fourthRow = this.fourthRow.map(
-            one => (one = parseInt(one) + 100)
-          );
-          this.fourthRow.forEach(one =>
-            document.getElementById(one).classList.add("reds")
-          );
-          this.fifthRow.forEach(one => {
-            document.getElementById(one).classList.remove("greens");
-          });
-          this.fifthRow = this.fifthRow.map(one => (one = parseInt(one) + 100));
-          this.fifthRow.forEach(one =>
-            document.getElementById(one).classList.add("greens")
-          );
+          this.firstRow = this.moveRowDown(this.firstRow, "blacks");
+          this.secondRow = this.moveRowDown(this.secondRow, "purples");
+          this.thirdRow = this.moveRowDown(this.thirdRow, "blues");
+          this.fourthRow = this.moveRowDown(this.fourthRow, "reds");
+          this.fifthRow = this.moveRowDown(this.fifthRow, "greens");
         } else {
           document
             .getElementById(this.firstRow.shift())
@@ -189,45 +162,11 @@ export default {
           !this.movedDown
         ) {
           this.movedDown = true;
-          this.firstRow.forEach(one => {
-            document.getElementById(one).classList.remove("blacks");
-          });
-          this.firstRow = this.firstRow.map(one => (one = parseInt(one) + 100));
-          this.firstRow.forEach(one =>
-            document.getElementById(one).classList.add("blacks")
-          );
-          this.secondRow.forEach(one => {
-            document.getElementById(one).classList.remove("purples");
-          });
-          this.secondRow = this.secondRow.map(
-            one => (one = parseInt(one) + 100)
-          );
-          this.secondRow.forEach(one =>
-            document.getElementById(one).classList.add("purples")
-          );
-          this.thirdRow.forEach(one => {
-            document.getElementById(one).classList.remove("blues");
-          });
-          this.thirdRow = this.thirdRow.map(one => (one = parseInt(one) + 100));
-          this.thirdRow.forEach(one =>
-            document.getElementById(one).classList.add("blues")
-          );
-          this.fourthRow.forEach(one => {
-            document.getElementById(one).classList.remove("reds");
-          });
-          this.fourthRow = this.fourthRow.map(
-            one => (one = parseInt(one) + 100)
-          );
-          this.fourthRow.forEach(one =>
-            document.getElementById(one).classList.add("reds")
-          );
-          this.fifthRow.forEach(one => {
-            document.getElementById(one).classList.remove("greens");
-          });
-          this.fifthRow = this.fifthRow.map(one => (one = parseInt(one) + 100));
-          this.fifthRow.forEach(one =>
-            document.getElementById(one).classList.add("greens")
-          );
+          this.firstRow = this.moveRowDown(this.firstRow, "blacks");
+          this.secondRow = this.moveRowDown(this.secondRow, "purples");
+          this.thirdRow = this.moveRowDown(this.thirdRow, "blues");
+          this.fourthRow = this.moveRowDown(this.fourthRow, "reds");
+          this.fifthRow = this.moveRowDown(this.fifthRow, "greens");
         } else {
           document
             .getElementById(this.firstRow.pop())
