@@ -182,26 +182,39 @@ export default {
         );
       }
     },
-    moveAllRowsToLeft() {
+    // moveAllRowsToLeft() {
+    //   for (let color in this.invaders) {
+    //     this.invaders[color].forEach(invader =>
+    //       document.getElementById(invader).classList.remove(color)
+    //     );
+    //     this.invaders[color] = this.invaders[color].map(
+    //       invader => (invader = invader - 1)
+    //     );
+    //     this.invaders[color].forEach(invader =>
+    //       document.getElementById(invader).classList.add(color)
+    //     );
+    //   }
+    // },
+    // moveAllRowsToRight() {
+    //   for (let color in this.invaders) {
+    //     this.invaders[color].forEach(invader =>
+    //       document.getElementById(invader).classList.remove(color)
+    //     );
+    //     this.invaders[color] = this.invaders[color].map(
+    //       invader => (invader = parseInt(invader) + 1)
+    //     );
+    //     this.invaders[color].forEach(invader =>
+    //       document.getElementById(invader).classList.add(color)
+    //     );
+    //   }
+    // },
+    moveAllRowsLeftOrRight(offset) {
       for (let color in this.invaders) {
         this.invaders[color].forEach(invader =>
           document.getElementById(invader).classList.remove(color)
         );
         this.invaders[color] = this.invaders[color].map(
-          invader => (invader = invader - 1)
-        );
-        this.invaders[color].forEach(invader =>
-          document.getElementById(invader).classList.add(color)
-        );
-      }
-    },
-    moveAllRowsToRight() {
-      for (let color in this.invaders) {
-        this.invaders[color].forEach(invader =>
-          document.getElementById(invader).classList.remove(color)
-        );
-        this.invaders[color] = this.invaders[color].map(
-          invader => (invader = parseInt(invader) + 1)
+          invader => (invader = parseInt(invader) + offset)
         );
         this.invaders[color].forEach(invader =>
           document.getElementById(invader).classList.add(color)
@@ -218,7 +231,7 @@ export default {
           this.movedDown = true;
           this.moveAllRowsDown();
         } else {
-          this.moveAllRowsToRight();
+          this.moveAllRowsLeftOrRight(1);
           if (
             this.invaders.blacks[this.invaders.blacks.length - 1] % 100 ===
             36
@@ -236,7 +249,7 @@ export default {
           this.movedDown = true;
           this.moveAllRowsDown();
         } else {
-          this.moveAllRowsToLeft();
+          this.moveAllRowsLeftOrRight(-1);
           if (this.invaders.blacks[0] % 100 === 11) {
             this.currentDirection = "right";
             this.movedDown = false;
