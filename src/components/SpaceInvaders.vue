@@ -136,10 +136,13 @@ export default {
       }
     },
     moveLazer(array) {
+      console.log(array);
       array.forEach(lazer =>
         document.getElementById(lazer).classList.remove("lazer")
       );
-      array = array.map(lazer => (lazer = parseInt(lazer) - 100));
+
+      array = array.map(lazer => parseInt(lazer) - 100);
+      array = array.filter(lazer => lazer / 100 >= 11);
       return array;
     },
     addLazerClass(array) {
