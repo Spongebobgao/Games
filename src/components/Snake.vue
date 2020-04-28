@@ -9,7 +9,7 @@
               <span style="font-size:0.8rem">use ↑ → ↓ ← to control the direction</span>
               <br />
               <span>Score: {{score}}</span>
-              <span class="btn" @click="startGame">Start Game</span>
+              <span class="snake-btn" @click="startGame">Start Game</span>
             </h3>
             <div id="myModal" class="modal">
               <div class="modal-content">
@@ -22,9 +22,9 @@
         </v-col>
       </v-row>
     </v-container>
-    <div class="board">
+    <div class="snake-board">
       <div v-for="m in 42" :key="m+10">
-        <div v-for="n in 29" :key="n+10" :id="`${(n+10)}${(m+10)}`" class="grid"></div>
+        <div v-for="n in 29" :key="n+10" :id="`${(n+10)}${(m+10)}`" class="snake-grid"></div>
       </div>
     </div>
   </v-card>
@@ -208,12 +208,12 @@ export default {
 };
 </script>
 
-<style scoped>
+<style >
 h3 {
   margin-left: 20px;
   color: #666;
 }
-.board {
+.snake-board {
   display: flex;
   flex-wrap: wrap;
   margin: auto;
@@ -221,7 +221,7 @@ h3 {
   height: 80%;
   margin-bottom: 10px;
 }
-.grid {
+.snake-grid {
   border: 0.5px#f2f2f2 solid;
   background: #dcdcdc;
   width: 15px;
@@ -229,7 +229,7 @@ h3 {
   cursor: pointer;
   box-shadow: 0.5px 0.5px 0.5px 0.5px #f2f2f2;
 }
-.btn {
+.snake-btn {
   float: right;
   font-size: 0.9rem;
   cursor: pointer;
@@ -267,13 +267,13 @@ h3 {
   background-color: rgba(0, 0, 0, 0.3); /* Black w/ opacity */
 }
 .modal-content {
-  background-color: #666;
+  background-color: #fff5ee;
   opacity: 0.8;
   margin: auto;
   padding: 20px;
-  border: 1px solid #666;
+  border: 1px solid #fff5ee;
   width: 45%;
-  color: white;
+  color: #994000;
   font-size: 2rem;
   text-align: center;
   font-family: "Alfa Slab One";
@@ -284,7 +284,7 @@ h3 {
   cursor: pointer;
 }
 .close {
-  color: white;
+  color: #994000;
   float: right;
   font-size: 28px;
   font-weight: bold;

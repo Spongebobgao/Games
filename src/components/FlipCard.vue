@@ -5,7 +5,7 @@
       <span class="score">{{score}}</span>
     </h1>
     <h2>{{msg}}</h2>
-    <div class="board">
+    <div class="flip-board">
       <img
         v-for="n in 16"
         :id="`${n-1}`"
@@ -15,7 +15,7 @@
         :key="n"
       />
     </div>
-    <button type="button" @click="reRender" class="btn">Play again</button>
+    <button type="button" @click="reRender" class="flip-btn">Play again</button>
   </div>
 </template>
 
@@ -165,19 +165,19 @@ export default {
 };
 </script>
 
-<style scoped>
+<style >
 h1,
 h2 {
   text-align: center;
 }
-.board {
+.flip-board {
   display: flex;
   flex-wrap: wrap;
   width: 400px;
   height: 400px;
   margin: auto;
 }
-.btn {
+.flip-btn {
   margin-left: 600px;
   margin-top: 20px;
   height: 2rem;

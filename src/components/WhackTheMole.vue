@@ -14,9 +14,9 @@
       </h1>
     </div>
     <div class="game">
-      <button type="button" @click="start" class="btn">Start Game</button>
-      <div class="board">
-        <div v-for="n in 9" :key="n" :id="`${n}`" @click="whackTheMole(n)" class="grid"></div>
+      <button type="button" @click="start" class="mole-btn">Start Game</button>
+      <div class="mole-board">
+        <div v-for="n in 9" :key="n" :id="`${n}`" @click="whackTheMole(n)" class="mole-grid"></div>
       </div>
     </div>
   </div>
@@ -68,7 +68,7 @@ export default {
     },
     placeTheMole() {
       document
-        .querySelectorAll(".grid")
+        .querySelectorAll(".mole-grid")
         .forEach(className => className.classList.remove("mole"));
       if (this.timeLeft > 0) {
         let position = Math.floor(Math.random() * 9) + 1;
@@ -80,7 +80,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .text {
   display: inline-block;
   width: 30%;
@@ -90,13 +90,13 @@ export default {
   display: inline-block;
   width: 60%;
 }
-.board {
+.mole-board {
   width: 450px;
   height: 450px;
   display: flex;
   flex-wrap: wrap;
 }
-.grid {
+.mole-grid {
   border: 1px#e59a9a solid;
   background: #ffece6;
   width: 150px;
@@ -108,7 +108,7 @@ export default {
   color: #b62f2f;
   font-style: italic;
 }
-.btn {
+.mole-btn {
   margin: 20px 180px;
   height: 2rem;
   background: #b62f2f;

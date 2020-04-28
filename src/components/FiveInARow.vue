@@ -8,7 +8,7 @@
               Five In A row
               <br />Current Player:
               <span class="player">{{player}}</span>
-              <span class="btn" @click="reRender">Play Again</span>
+              <span class="five-btn" @click="reRender">Play Again</span>
             </h3>
             <div id="myModal" class="modal">
               <div class="modal-content">
@@ -21,13 +21,13 @@
         </v-col>
       </v-row>
     </v-container>
-    <div class="board">
+    <div class="five-board">
       <div v-for="m in 20" :key="m+10">
         <div
           v-for="n in 13"
           :key="n+10"
           :id="`${(n+10)}${(m+10)}`"
-          class="grid"
+          class="five-grid"
           @click="placePiece(n+10,m+10)"
         ></div>
       </div>
@@ -137,16 +137,16 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 h3 {
   margin-left: 10px;
 }
-.board {
+.five-board {
   display: flex;
   flex-wrap: wrap;
   margin: 0 50px 0 50px;
 }
-.grid {
+.five-grid {
   border: 0.5px solid #fac9bb;
   border-collapse: collapse;
   border-radius: 50%;
@@ -155,7 +155,7 @@ h3 {
   width: 35px;
   cursor: pointer;
 }
-.btn {
+.five-btn {
   margin-left: 400px;
   font-size: 0.9rem;
   cursor: pointer;
@@ -168,50 +168,5 @@ h3 {
 .player {
   font-style: italic;
   color: #cc3300;
-}
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 70px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgba(0, 0, 0, 0.3); /* Black w/ opacity */
-}
-.modal-content {
-  background-color: #b62f2f;
-  opacity: 0.8;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #cc3300;
-  border-radius: 15%;
-  width: 60%;
-  color: white;
-  font-size: 2rem;
-  text-align: center;
-  font-family: "Alfa Slab One";
-}
-.startOver {
-  font-size: 1rem;
-  float: left;
-  cursor: pointer;
-}
-.close {
-  color: white;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus,
-.startOver:hover,
-.startOver:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
 }
 </style>

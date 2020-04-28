@@ -9,7 +9,7 @@
               <span style="font-size:0.8rem">use → ← to control the directions</span>
               <br />
               <span>Score: {{score}}</span>
-              <span class="btn" @click="startGame">Start Game</span>
+              <span class="space-btn" @click="startGame">Start Game</span>
             </h3>
             <!-- <div id="myModal" class="modal">
               <div class="modal-content">
@@ -22,9 +22,9 @@
         </v-col>
       </v-row>
     </v-container>
-    <div class="board">
+    <div class="space-board">
       <div v-for="m in 26" :key="m+10">
-        <div v-for="n in 17" :key="n+10" :id="`${(n+10)}${(m+10)}`" class="grid"></div>
+        <div v-for="n in 17" :key="n+10" :id="`${(n+10)}${(m+10)}`" class="space-grid"></div>
       </div>
     </div>
   </v-card>
@@ -33,27 +33,62 @@
 export default {
   data() {
     return {
-      weapon: 0,
+      weaponPosition: 0,
       invaders: { blacks: [], purples: [], blues: [], reds: [], greens: [] },
-      weaponInterval: null,
+      fireInterval: null,
       invaderInterval: null,
       score: 0,
       currentDirection: "right",
-      movedDown: false
+      movedDown: true,
+      current: 0,
+      lazers: {
+        2711: [],
+        2712: [],
+        2713: [],
+        2714: [],
+        2715: [],
+        2716: [],
+        2717: [],
+        2718: [],
+        2719: [],
+        2720: [],
+        2721: [],
+        2722: [],
+        2723: [],
+        2724: [],
+        2725: [],
+        2726: [],
+        2727: [],
+        2728: [],
+        2729: [],
+        2730: [],
+        2731: [],
+        2732: [],
+        2733: [],
+        2734: [],
+        2735: [],
+        2736: []
+      }
     };
   },
   methods: {
     startGame() {
       this.resetData();
-      window.addEventListener("keydown", this.moveWeapon);
+      window.addEventListener("keydown", this.moveweaponPosition);
     },
     resetData() {
       this.movedDown = true;
+      this.score = 0;
       clearInterval(this.invaderInterval);
-      if (this.weapon != 0)
-        document.getElementById(this.weapon).classList.remove("weapon");
-      this.weapon = `${27}${Math.floor(Math.random() * 16) + 11}`;
-      document.getElementById(this.weapon).classList.add("weapon");
+      clearInterval(this.fireInterval);
+      if (this.weaponPosition != 0)
+        document
+          .getElementById(this.weaponPosition)
+          .classList.remove("weaponPosition");
+      this.weaponPosition = `${27}${Math.floor(Math.random() * 16) + 11}`;
+      document
+        .getElementById(this.weaponPosition)
+        .classList.add("weaponPosition");
       if (this.invaders.blacks.length > 0) {
         for (let color in this.invaders) {
           this.invaders[color].forEach(one =>
@@ -75,18 +110,60 @@ export default {
       }
       this.currentDirection = "right";
       this.invaderInterval = setInterval(this.moveInvaders, 1000);
+      this.fireInterval = setInterval(this.fire, 300);
+      //setInterval(this.moveLazer, 1000);
     },
-    moveWeapon(e) {
+    //every second there will be a lazer out from current weaponPosition
+    fire() {
+      for (let position in this.lazers) {
+        if (position == this.weaponPosition) {
+          if (this.lazers[position].length > 0) {
+            this.lazers[position] = this.moveLazer(this.lazers[position]);
+            let newElement = this.weaponPosition - 100;
+            this.lazers[position].push(newElement);
+            this.addLazerClass(this.lazers[position]);
+          } else {
+            let newElement = parseInt(this.weaponPosition) - 100;
+            this.lazers[position].unshift(newElement);
+            this.addLazerClass(this.lazers[position]);
+          }
+        } else {
+          if (this.lazers[position].length > 0) {
+            this.lazers[position] = this.moveLazer(this.lazers[position]);
+            this.addLazerClass(this.lazers[position]);
+          }
+        }
+      }
+    },
+    moveLazer(array) {
+      array.forEach(lazer =>
+        document.getElementById(lazer).classList.remove("lazer")
+      );
+      array = array.map(lazer => (lazer = parseInt(lazer) - 100));
+      return array;
+    },
+    addLazerClass(array) {
+      array.forEach(lazer =>
+        document.getElementById(lazer).classList.add("lazer")
+      );
+    },
+    moveweaponPosition(e) {
       if (e.code === "ArrowLeft") {
-        if (this.weapon % 100 > 11) {
-          document.getElementById(this.weapon--).classList.remove("weapon");
-          document.getElementById(this.weapon).classList.add("weapon");
+        if (this.weaponPosition % 100 > 11) {
+          let element = document.getElementById(this.weaponPosition--);
+          element.classList.remove("weaponPosition");
+          document
+            .getElementById(this.weaponPosition)
+            .classList.add("weaponPosition");
         }
       }
       if (e.code === "ArrowRight") {
-        if (this.weapon % 100 < 36) {
-          document.getElementById(this.weapon++).classList.remove("weapon");
-          document.getElementById(this.weapon).classList.add("weapon");
+        if (this.weaponPosition % 100 < 36) {
+          let element = document.getElementById(this.weaponPosition++);
+          element.classList.remove("weaponPosition");
+          document
+            .getElementById(this.weaponPosition)
+            .classList.add("weaponPosition");
         }
       }
     },
@@ -163,12 +240,12 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style >
 h3 {
   margin-left: 20px;
   color: #fff;
 }
-.board {
+.space-board {
   display: flex;
   flex-wrap: wrap;
   margin: auto;
@@ -178,7 +255,7 @@ h3 {
   border: 1px #0cc solid;
   background-color: #e6ffff;
 }
-.grid {
+.space-grid {
   border: 0.5px#f2f2f2 solid;
   background-color: #e6ffff;
   width: 25px;
@@ -186,7 +263,7 @@ h3 {
   cursor: pointer;
   background-blend-mode: multiply;
 }
-.btn {
+.space-btn {
   float: right;
   font-size: 0.9rem;
   cursor: pointer;
@@ -195,7 +272,7 @@ h3 {
   border-radius: 10%;
   margin-right: 40px;
 }
-.weapon {
+.weaponPosition {
   background-image: url("../assets/weapon.jpg");
 }
 .purples {
@@ -215,49 +292,6 @@ h3 {
 }
 .lazer {
   background-image: url("../assets/lazer.png");
-}
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 70px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgba(0, 0, 0, 0.3); /* Black w/ opacity */
-}
-.modal-content {
-  background-color: rgb(0, 128, 128, 0.5);
-  opacity: 0.8;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #0cc;
-  width: 45%;
-  color: white;
-  font-size: 2rem;
-  text-align: center;
-  font-family: "Alfa Slab one";
-}
-.startOver {
-  font-size: 1rem;
-  float: left;
-  cursor: pointer;
-}
-.close {
-  color: white;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus,
-.startOver:hover,
-.startOver:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
+  transition: transform 1s linear;
 }
 </style>
