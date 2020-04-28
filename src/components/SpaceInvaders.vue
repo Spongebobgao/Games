@@ -140,7 +140,6 @@ export default {
       array.forEach(lazer =>
         document.getElementById(lazer).classList.remove("lazer")
       );
-
       array = array.map(lazer => parseInt(lazer) - 100);
       array = array.filter(lazer => lazer / 100 >= 11);
       return array;
@@ -185,23 +184,28 @@ export default {
     },
     moveAllRowsToLeft() {
       for (let color in this.invaders) {
-        document
-          .getElementById(this.invaders[color].pop())
-          .classList.remove(color);
-        let newElement = parseInt(this.invaders[color][0]) - 1;
-        this.invaders[color].unshift(newElement);
-        document.getElementById(newElement).classList.add(color);
+        this.invaders[color].forEach(invader =>
+          document.getElementById(invader).classList.remove(color)
+        );
+        this.invaders[color] = this.invaders[color].map(
+          invader => (invader = invader - 1)
+        );
+        this.invaders[color].forEach(invader =>
+          document.getElementById(invader).classList.add(color)
+        );
       }
     },
     moveAllRowsToRight() {
       for (let color in this.invaders) {
-        document
-          .getElementById(this.invaders[color].shift())
-          .classList.remove(color);
-        let newElement =
-          parseInt(this.invaders[color][this.invaders[color].length - 1]) + 1;
-        this.invaders[color].push(newElement);
-        document.getElementById(newElement).classList.add(color);
+        this.invaders[color].forEach(invader =>
+          document.getElementById(invader).classList.remove(color)
+        );
+        this.invaders[color] = this.invaders[color].map(
+          invader => (invader = parseInt(invader) + 1)
+        );
+        this.invaders[color].forEach(invader =>
+          document.getElementById(invader).classList.add(color)
+        );
       }
     },
     moveInvaders() {
