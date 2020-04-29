@@ -106,22 +106,18 @@ export default {
       }
     },
     moveLazer() {
+      this.checkIfLazerHitInvader();
       document.getElementById(this.currentLazer).classList.remove("lazer");
       this.currentLazer -= 100;
       if (this.currentLazer / 100 >= 11) {
         document.getElementById(this.currentLazer).classList.add("lazer");
-        this.checkCollision();
+        this.checkIfLazerHitInvader();
       } else {
         this.currentLazer = 0;
         clearInterval(this.lazerInterval);
       }
     },
-    addLazerClass(array) {
-      array.forEach(lazer =>
-        document.getElementById(lazer).classList.add("lazer")
-      );
-    },
-    checkCollision() {
+    checkIfLazerHitInvader() {
       for (let color in this.invaders) {
         if (this.invaders[color].length > 0) {
           if (this.invaders[color].includes(this.currentLazer)) {
@@ -185,7 +181,7 @@ export default {
         }
       }
     },
-    moveAllRowsDown() {
+    moveAllInvadersDown() {
       for (let color in this.invaders) {
         if (this.invaders[color].length > 0) {
           this.invaders[color].forEach(one =>
@@ -200,7 +196,7 @@ export default {
         }
       }
     },
-    moveAllRowsLeftOrRight(offset) {
+    moveAllInvadersLeftOrRight(offset) {
       for (let color in this.invaders) {
         if (this.invaders[color].length > 0) {
           this.invaders[color].forEach(invader =>
@@ -215,6 +211,19 @@ export default {
         }
       }
     },
+    checkIfInvadersWin() {
+      for (let color in this.invaders) {
+        if (this.invaders[color].length > 0) {
+          if (this.invaders[color].includes(this.weaponPosition)) {
+            clearInterval(this.lazerInterval);
+            clearInterval(this.invaderInterval);
+            document.getElementById(this.weaponPosition).classList.add("boom");
+            document.getElementById("content").innerHTML = "Game over";
+            document.getElementById("myModal").style.display = "block";
+          }
+        }
+      }
+    },
     moveInvaders() {
       if (this.currentDirection === "right") {
         if (
@@ -223,7 +232,7 @@ export default {
           !this.movedDown
         ) {
           this.movedDown = true;
-          this.moveAllRowsDown();
+          this.moveAllInvadersDown();
           clearInterval(this.invaderInterval);
           this.speed -= 0.1;
           this.invaderInterval = setInterval(
@@ -231,7 +240,7 @@ export default {
             1000 * this.speed
           );
         } else {
-          this.moveAllRowsLeftOrRight(1);
+          this.moveAllInvadersLeftOrRight(1);
           if (
             this.invaders.blacks[this.invaders.blacks.length - 1] % 100 ===
             36
@@ -240,6 +249,7 @@ export default {
             this.movedDown = false;
           }
         }
+        this.checkIfInvadersWin();
       }
       if (this.currentDirection === "left") {
         if (
@@ -247,15 +257,16 @@ export default {
           !this.movedDown
         ) {
           this.movedDown = true;
-          this.moveAllRowsDown();
+          this.moveAllInvadersDown();
         } else {
-          this.moveAllRowsLeftOrRight(-1);
+          this.moveAllInvadersLeftOrRight(-1);
           if (this.invaders.blacks[0] % 100 === 11) {
             this.currentDirection = "right";
             this.movedDown = false;
           }
         }
       }
+      this.checkIfInvadersWin();
     }
   }
 };
