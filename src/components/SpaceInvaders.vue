@@ -6,7 +6,9 @@
           <v-card color="#008080" dark>
             <h3>
               Space Invaders:
-              <span style="font-size:0.8rem">use → ← to control the directions</span>
+              <span
+                style="font-size:0.8rem"
+              >use → ← to control the directions ↑ to fire</span>
               <br />
               <span>Score: {{score}}</span>
               <span class="space-btn" @click="startGame">Start Game</span>
@@ -35,52 +37,24 @@ export default {
     return {
       weaponPosition: 0,
       invaders: { blacks: [], purples: [], blues: [], reds: [], greens: [] },
-      fireInterval: null,
       invaderInterval: null,
+      lazerInterval: null,
       score: 0,
       currentDirection: "right",
       movedDown: true,
-      current: 0,
-      lazers: {
-        2711: [],
-        2712: [],
-        2713: [],
-        2714: [],
-        2715: [],
-        2716: [],
-        2717: [],
-        2718: [],
-        2719: [],
-        2720: [],
-        2721: [],
-        2722: [],
-        2723: [],
-        2724: [],
-        2725: [],
-        2726: [],
-        2727: [],
-        2728: [],
-        2729: [],
-        2730: [],
-        2731: [],
-        2732: [],
-        2733: [],
-        2734: [],
-        2735: [],
-        2736: []
-      }
+      currentLazer: 0
     };
   },
   methods: {
     startGame() {
       this.resetData();
       window.addEventListener("keydown", this.moveweaponPosition);
+      window.addEventListener("keyup", this.fire);
     },
     resetData() {
       this.movedDown = true;
       this.score = 0;
       clearInterval(this.invaderInterval);
-      clearInterval(this.fireInterval);
       if (this.weaponPosition != 0)
         document
           .getElementById(this.weaponPosition)
@@ -110,44 +84,49 @@ export default {
       }
       this.currentDirection = "right";
       this.invaderInterval = setInterval(this.moveInvaders, 1000);
-      this.fireInterval = setInterval(this.fire, 300);
-      //setInterval(this.moveLazer, 1000);
     },
-    //every second there will be a lazer out from current weaponPosition
-    fire() {
-      for (let position in this.lazers) {
-        if (position == this.weaponPosition) {
-          if (this.lazers[position].length > 0) {
-            this.lazers[position] = this.moveLazer(this.lazers[position]);
-            let newElement = this.weaponPosition - 100;
-            this.lazers[position].push(newElement);
-            this.addLazerClass(this.lazers[position]);
-          } else {
-            let newElement = parseInt(this.weaponPosition) - 100;
-            this.lazers[position].unshift(newElement);
-            this.addLazerClass(this.lazers[position]);
-          }
-        } else {
-          if (this.lazers[position].length > 0) {
-            this.lazers[position] = this.moveLazer(this.lazers[position]);
-            this.addLazerClass(this.lazers[position]);
-          }
-        }
+    fire(e) {
+      if (e.code === "ArrowUp") {
+        this.currentLazer = parseInt(this.weaponPosition) - 100;
+        document.getElementById(this.currentLazer).classList.add("lazer");
+        this.lazerInterval = setInterval(this.moveLazer, 50);
       }
     },
-    moveLazer(array) {
-      console.log(array);
-      array.forEach(lazer =>
-        document.getElementById(lazer).classList.remove("lazer")
-      );
-      array = array.map(lazer => parseInt(lazer) - 100);
-      array = array.filter(lazer => lazer / 100 >= 11);
-      return array;
+    moveLazer() {
+      document.getElementById(this.currentLazer).classList.remove("lazer");
+      this.currentLazer -= 100;
+      if (this.currentLazer / 100 >= 11) {
+        document.getElementById(this.currentLazer).classList.add("lazer");
+        this.checkCollision();
+      } else this.currentLazer = 0;
     },
     addLazerClass(array) {
       array.forEach(lazer =>
         document.getElementById(lazer).classList.add("lazer")
       );
+    },
+    checkCollision() {
+      for (let color in this.invaders) {
+        if (this.invaders[color].length > 0) {
+          if (this.invaders[color].includes(this.currentLazer)) {
+            clearInterval(this.lazerInterval);
+            this.score++;
+            this.invaders[color] = this.invaders[color].filter(
+              invader => invader != this.currentLazer
+            );
+            document
+              .getElementById(this.currentLazer)
+              .classList.remove("lazer", color);
+            document.getElementById(this.currentLazer).classList.add("boom");
+            let temp = this.currentLazer;
+            setTimeout(
+              () => document.getElementById(temp).classList.remove("boom"),
+              200
+            );
+            this.currentLazer = 0;
+          }
+        }
+      }
     },
     moveweaponPosition(e) {
       if (e.code === "ArrowLeft") {
@@ -171,54 +150,32 @@ export default {
     },
     moveAllRowsDown() {
       for (let color in this.invaders) {
-        this.invaders[color].forEach(one =>
-          document.getElementById(one).classList.remove(color)
-        );
-        this.invaders[color] = this.invaders[color].map(
-          one => (one = parseInt(one) + 100)
-        );
-        this.invaders[color].forEach(one =>
-          document.getElementById(one).classList.add(color)
-        );
+        if (this.invaders[color].length > 0) {
+          this.invaders[color].forEach(one =>
+            document.getElementById(one).classList.remove(color)
+          );
+          this.invaders[color] = this.invaders[color].map(
+            one => (one = parseInt(one) + 100)
+          );
+          this.invaders[color].forEach(one =>
+            document.getElementById(one).classList.add(color)
+          );
+        }
       }
     },
-    // moveAllRowsToLeft() {
-    //   for (let color in this.invaders) {
-    //     this.invaders[color].forEach(invader =>
-    //       document.getElementById(invader).classList.remove(color)
-    //     );
-    //     this.invaders[color] = this.invaders[color].map(
-    //       invader => (invader = invader - 1)
-    //     );
-    //     this.invaders[color].forEach(invader =>
-    //       document.getElementById(invader).classList.add(color)
-    //     );
-    //   }
-    // },
-    // moveAllRowsToRight() {
-    //   for (let color in this.invaders) {
-    //     this.invaders[color].forEach(invader =>
-    //       document.getElementById(invader).classList.remove(color)
-    //     );
-    //     this.invaders[color] = this.invaders[color].map(
-    //       invader => (invader = parseInt(invader) + 1)
-    //     );
-    //     this.invaders[color].forEach(invader =>
-    //       document.getElementById(invader).classList.add(color)
-    //     );
-    //   }
-    // },
     moveAllRowsLeftOrRight(offset) {
       for (let color in this.invaders) {
-        this.invaders[color].forEach(invader =>
-          document.getElementById(invader).classList.remove(color)
-        );
-        this.invaders[color] = this.invaders[color].map(
-          invader => (invader = parseInt(invader) + offset)
-        );
-        this.invaders[color].forEach(invader =>
-          document.getElementById(invader).classList.add(color)
-        );
+        if (this.invaders[color].length > 0) {
+          this.invaders[color].forEach(invader =>
+            document.getElementById(invader).classList.remove(color)
+          );
+          this.invaders[color] = this.invaders[color].map(
+            invader => (invader = parseInt(invader) + offset)
+          );
+          this.invaders[color].forEach(invader =>
+            document.getElementById(invader).classList.add(color)
+          );
+        }
       }
     },
     moveInvaders() {
@@ -312,6 +269,8 @@ h3 {
 }
 .lazer {
   background-image: url("../assets/lazer.png");
-  transition: transform 1s linear;
+}
+.boom {
+  background-image: url("../assets/bomb.png");
 }
 </style>

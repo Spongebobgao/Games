@@ -47,6 +47,7 @@ export default {
   methods: {
     navigateTo(path) {
       this.$router.push(path);
+      window.location.reload();
     }
   }
 };
