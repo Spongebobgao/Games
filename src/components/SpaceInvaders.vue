@@ -8,18 +8,18 @@
               Space Invaders:
               <span
                 style="font-size:0.8rem"
-              >use → ← to control the directions ↑ to fire</span>
+              >use → ← to control the directions, ↑ to fire</span>
               <br />
               <span>Score: {{score}}</span>
               <span class="space-btn" @click="startGame">Start Game</span>
             </h3>
-            <!-- <div id="myModal" class="modal">
+            <div id="myModal" class="modal">
               <div class="modal-content">
                 <span class="startOver" @click="startOver">Play Again</span>
                 <span @click="closeModal" class="close">&times;</span>
                 <p id="content"></p>
-            </div>-->
-            <!-- </div> -->
+              </div>
+            </div>
           </v-card>
         </v-col>
       </v-row>
@@ -42,19 +42,30 @@ export default {
       score: 0,
       currentDirection: "right",
       movedDown: true,
-      currentLazer: 0
+      currentLazer: 0,
+      speed: 0.8
     };
   },
   methods: {
+    startOver() {
+      this.startGame();
+      this.closeModal();
+    },
+    closeModal() {
+      document.getElementById("myModal").style.display = "none";
+    },
     startGame() {
       this.resetData();
       window.addEventListener("keydown", this.moveweaponPosition);
       window.addEventListener("keyup", this.fire);
     },
     resetData() {
+      this.currentLazer = 0;
+      this.speed = 0.8;
       this.movedDown = true;
       this.score = 0;
       clearInterval(this.invaderInterval);
+      clearInterval(this.lazerInterval);
       if (this.weaponPosition != 0)
         document
           .getElementById(this.weaponPosition)
@@ -63,8 +74,8 @@ export default {
       document
         .getElementById(this.weaponPosition)
         .classList.add("weaponPosition");
-      if (this.invaders.blacks.length > 0) {
-        for (let color in this.invaders) {
+      for (let color in this.invaders) {
+        if (this.invaders[color].length > 0) {
           this.invaders[color].forEach(one =>
             document.getElementById(one).classList.remove(color)
           );
@@ -83,13 +94,15 @@ export default {
         );
       }
       this.currentDirection = "right";
-      this.invaderInterval = setInterval(this.moveInvaders, 1000);
+      this.invaderInterval = setInterval(this.moveInvaders, 1000 * this.speed);
     },
     fire(e) {
       if (e.code === "ArrowUp") {
-        this.currentLazer = parseInt(this.weaponPosition) - 100;
-        document.getElementById(this.currentLazer).classList.add("lazer");
-        this.lazerInterval = setInterval(this.moveLazer, 50);
+        if (this.currentLazer === 0) {
+          this.currentLazer = parseInt(this.weaponPosition) - 100;
+          document.getElementById(this.currentLazer).classList.add("lazer");
+          this.lazerInterval = setInterval(this.moveLazer, 50);
+        }
       }
     },
     moveLazer() {
@@ -98,7 +111,10 @@ export default {
       if (this.currentLazer / 100 >= 11) {
         document.getElementById(this.currentLazer).classList.add("lazer");
         this.checkCollision();
-      } else this.currentLazer = 0;
+      } else {
+        this.currentLazer = 0;
+        clearInterval(this.lazerInterval);
+      }
     },
     addLazerClass(array) {
       array.forEach(lazer =>
@@ -110,23 +126,44 @@ export default {
         if (this.invaders[color].length > 0) {
           if (this.invaders[color].includes(this.currentLazer)) {
             clearInterval(this.lazerInterval);
-            this.score++;
-            this.invaders[color] = this.invaders[color].filter(
-              invader => invader != this.currentLazer
-            );
-            document
-              .getElementById(this.currentLazer)
-              .classList.remove("lazer", color);
-            document.getElementById(this.currentLazer).classList.add("boom");
-            let temp = this.currentLazer;
-            setTimeout(
-              () => document.getElementById(temp).classList.remove("boom"),
-              200
-            );
-            this.currentLazer = 0;
+            let temp = parseInt(this.currentLazer) + 100;
+            if (!this.checkIfNeedDeleteLazer(temp)) {
+              this.invaders[color] = this.invaders[color].filter(
+                invader => invader != this.currentLazer
+              );
+              document
+                .getElementById(this.currentLazer)
+                .classList.remove("lazer", color);
+              document.getElementById(this.currentLazer).classList.add("boom");
+              let temp = this.currentLazer;
+              setTimeout(
+                () => document.getElementById(temp).classList.remove("boom"),
+                200
+              );
+              this.currentLazer = 0;
+              this.score++;
+              if (this.score === 80) {
+                document.getElementById("content").innerHTML = "You Win";
+                document.getElementById("myModal").style.display = "block";
+              }
+            }
           }
         }
       }
+    },
+    checkIfNeedDeleteLazer(temp) {
+      for (let invader in this.invaders) {
+        if (this.invaders[invader].length > 0) {
+          if (this.invaders[invader].includes(temp)) {
+            document
+              .getElementById(this.currentLazer)
+              .classList.remove("lazer");
+            this.currentLazer = 0;
+            return true;
+          }
+        }
+      }
+      return false;
     },
     moveweaponPosition(e) {
       if (e.code === "ArrowLeft") {
@@ -187,6 +224,12 @@ export default {
         ) {
           this.movedDown = true;
           this.moveAllRowsDown();
+          clearInterval(this.invaderInterval);
+          this.speed -= 0.1;
+          this.invaderInterval = setInterval(
+            this.moveInvaders,
+            1000 * this.speed
+          );
         } else {
           this.moveAllRowsLeftOrRight(1);
           if (
@@ -233,12 +276,12 @@ h3 {
   background-color: #e6ffff;
 }
 .space-grid {
-  border: 0.5px#f2f2f2 solid;
   background-color: #e6ffff;
   width: 25px;
   height: 25px;
   cursor: pointer;
   background-blend-mode: multiply;
+  border-radius: 50%;
 }
 .space-btn {
   float: right;
