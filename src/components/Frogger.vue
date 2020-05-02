@@ -2,10 +2,7 @@
   <div>
     <div>
       <h2 class="frog-header">
-        <pre>Score: {{score}}      Time Left: {{timeLeft}}      <span
-  class="frog-btn"
-  @click="startGame()"
->Start Game</span></pre>
+        <pre>Time Left: {{timeLeft}}      <span class="frog-btn" @click="startGame()">Start Game</span></pre>
       </h2>
     </div>
     <div class="frog-board">
@@ -21,7 +18,6 @@ export default {
   data() {
     return {
       timeLeft: 0,
-      score: 0,
       startPoint: 0,
       destination: 0,
       frogLeft: 0,
@@ -254,56 +250,27 @@ export default {
       //go to the right
       if (e.code === "ArrowRight") {
         if (this.startPoint % 100 < 35) {
-          document.getElementById(this.startPoint).classList.remove("frog");
-          document.getElementById(this.startPoint).classList.add("grass");
-          this.startPoint++;
-          document.getElementById(this.startPoint).classList.remove("grass");
-          document.getElementById(this.startPoint).classList.add("frog");
+          this.moveFrogAllDirections(1);
         }
       }
       //go to the left
       if (e.code === "ArrowLeft") {
         console.log(this.startPoint % 100);
         if (this.startPoint % 100 > 11) {
-          document.getElementById(this.startPoint).classList.remove("frog");
-          document
-            .getElementById(this.startPoint)
-            .classList.add(this.checkWitchClassToRemoveOrAdd());
-          this.startPoint--;
-          document
-            .getElementById(this.startPoint)
-            .classList.remove(this.checkWitchClassToRemoveOrAdd());
-          document.getElementById(this.startPoint).classList.add("frog");
+          this.moveFrogAllDirections(-1);
         }
       }
       //go up
       if (e.code === "ArrowUp") {
         console.log(this.startPoint / 100 > 11);
-        if (this.startPoint / 100 > 11) {
-          document.getElementById(this.startPoint).classList.remove("frog");
-          document
-            .getElementById(this.startPoint)
-            .classList.add(this.checkWitchClassToRemoveOrAdd());
-          this.startPoint = parseInt(this.startPoint) - 100;
-
-          document
-            .getElementById(this.startPoint)
-            .classList.remove(this.checkWitchClassToRemoveOrAdd());
-          document.getElementById(this.startPoint).classList.add("frog");
+        if (Math.floor(this.startPoint / 100) > 11) {
+          this.moveFrogAllDirections(-100);
         }
       }
       //go down
       if (e.code === "ArrowDown") {
         if (this.startPoint / 100 < 30) {
-          document.getElementById(this.startPoint).classList.remove("frog");
-          document
-            .getElementById(this.startPoint)
-            .classList.add(this.checkWitchClassToRemoveOrAdd());
-          this.startPoint = parseInt(this.startPoint) + 100;
-          document
-            .getElementById(this.startPoint)
-            .classList.remove(this.checkWitchClassToRemoveOrAdd());
-          document.getElementById(this.startPoint).classList.add("frog");
+          this.moveFrogAllDirections(100);
         }
       }
     },
