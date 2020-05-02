@@ -22,30 +22,26 @@ export default {
     return {
       timeLeft: 0,
       score: 0,
-      carAndMiniWoodDirection: "right",
-      tankAndShortWoodDirection: "right",
-      rocketAndLongWoodDirection: "left",
-      trainAndXlWoodDirection: "left",
-      carAndMiniWoodInterval: null,
-      tankAndShortWoodInterval: null,
-      rocketAndLongWoodInterval: null,
-      trainAndXlWoodInterval: null,
-      count: 0
+      startPoint: 0,
+      destination: 0,
+      frogLeft: 0,
+      frogTop: 0,
+      water: [12, 13, 14, 15, 16, 17, 18, 19],
+      road: [22, 23, 24, 25, 26, 27, 28, 29],
+      grass: [11, 20, 21, 30]
     };
   },
   methods: {
     startGame() {
+      window.addEventListener("keydown", this.moveFrog);
       //set up the board
       let allElements = document.querySelectorAll(".frog-grid div");
-      let water = [12, 13, 14, 15, 16, 17, 18, 19];
-      let road = [22, 23, 24, 25, 26, 27, 28, 29];
-      let grass = [11, 20, 21, 30];
       allElements.forEach(element => {
-        if (water.includes(Math.floor(element.id / 100)))
+        if (this.water.includes(Math.floor(element.id / 100)))
           element.classList.add("water");
-        else if (road.includes(Math.floor(element.id / 100)))
+        else if (this.road.includes(Math.floor(element.id / 100)))
           element.classList.add("road");
-        else if (grass.includes(Math.floor(element.id / 100)))
+        else if (this.grass.includes(Math.floor(element.id / 100)))
           element.classList.add("grass");
       });
       let parentDiv = document.getElementsByClassName("frog-board")[0];
@@ -211,6 +207,13 @@ export default {
         "left",
         600
       );
+      this.startPoint = `${30}${Math.floor(Math.random() * 15) + 11}`;
+      this.destination = `${11}${Math.floor(Math.random() * 15) + 11}`;
+      console.log(this.startPoint, this.destination);
+      document.getElementById(this.startPoint).classList.remove("grass");
+      document.getElementById(this.destination).classList.remove("grass");
+      document.getElementById(this.startPoint).classList.add("frog");
+      document.getElementById(this.destination).classList.add("frog");
     },
     appendDivToWaterAndRoadPart(
       parentDiv,
@@ -225,12 +228,11 @@ export default {
       child.style.left = left;
       child.style.top = top;
       child.classList.add(className);
-      setInterval(this.moveCars, time, parentDiv, child, direction);
+      setInterval(this.moveAppendedDivs, time, parentDiv, child, direction);
     },
-    moveCars(parentDiv, child, direction) {
+    moveAppendedDivs(parentDiv, child, direction) {
       let left = child.style.left;
       left = parseInt(left.slice(0, left.length - 2));
-      console.log(left);
       if (direction === "right") {
         if (left > 560) {
           //parentDiv.remove(child);
@@ -246,6 +248,35 @@ export default {
           child.style.left = left - 25 + "px";
         }
       }
+    },
+    moveFrog(e) {
+      //go to the right
+      if (e.code === "ArrowRight") {
+        if (this.startPoint % 100 < 35) {
+          document.getElementById(this.startPoint).classList.remove("frog");
+          document.getElementById(this.startPoint).classList.add("grass");
+          this.startPoint++;
+          document.getElementById(this.startPoint).classList.remove("grass");
+          document.getElementById(this.startPoint).classList.add("frog");
+        }
+      }
+      //go to the left
+      if (e.code === "ArrowLeft") {
+        console.log(this.startPoint % 100);
+        if (this.startPoint % 100 > 11) {
+          document.getElementById(this.startPoint).classList.remove("frog");
+          document.getElementById(this.startPoint).classList.add("grass");
+          this.startPoint--;
+          document.getElementById(this.startPoint).classList.remove("grass");
+          document.getElementById(this.startPoint).classList.add("frog");
+        }
+      }
+      // //go up
+      // if (e.code === "ArrowUp") {
+      // }
+      // //go down
+      // if (e.code === "ArrowDown") {
+      // }
     }
   }
 };
@@ -331,10 +362,13 @@ export default {
 }
 .train {
   background-image: url("../assets/train.png");
-
   width: 100px;
   height: 25px;
   position: absolute;
+}
+.frog {
+  background-image: url("../assets/frog.png");
+  background-color: white;
 }
 .grass {
   background-image: url("../assets/grass.png");
