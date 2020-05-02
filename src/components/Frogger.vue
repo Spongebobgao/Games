@@ -5,8 +5,7 @@
         <pre>Score: {{score}}      Time Left: {{timeLeft}}      <span
   class="frog-btn"
   @click="startGame()"
->Start Game</span>
-<span class="frog-btn" @click="move()">move</span></pre>
+>Start Game</span></pre>
       </h2>
     </div>
     <div class="frog-board">
@@ -23,17 +22,20 @@ export default {
     return {
       timeLeft: 0,
       score: 0,
-      child: null
+      carAndMiniWoodDirection: "right",
+      tankAndShortWoodDirection: "right",
+      rocketAndLongWoodDirection: "left",
+      trainAndXlWoodDirection: "left",
+      carAndMiniWoodInterval: null,
+      tankAndShortWoodInterval: null,
+      rocketAndLongWoodInterval: null,
+      trainAndXlWoodInterval: null,
+      count: 0
     };
   },
   methods: {
     startGame() {
-      let parentDiv = document.getElementsByClassName("frog-board")[0];
-      this.child = document.createElement("div");
-      parentDiv.appendChild(this.child);
-      this.child.style.left = "359px";
-      this.child.style.top = "20px";
-      this.child.classList.add("longwood");
+      //set up the board
       let allElements = document.querySelectorAll(".frog-grid div");
       let water = [12, 13, 14, 15, 16, 17, 18, 19];
       let road = [22, 23, 24, 25, 26, 27, 28, 29];
@@ -46,15 +48,203 @@ export default {
         else if (grass.includes(Math.floor(element.id / 100)))
           element.classList.add("grass");
       });
+      let parentDiv = document.getElementsByClassName("frog-board")[0];
+      //set up the water part
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        2000,
+        parentDiv,
+        "615px",
+        "20px",
+        "miniwood",
+        "left",
+        1000
+      );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        3000,
+        parentDiv,
+        "25px",
+        "45px",
+        "shortwood",
+        "right",
+        800
+      );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        4000,
+        parentDiv,
+        "530px",
+        "70px",
+        "longwood",
+        "left",
+        600
+      );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        5000,
+        parentDiv,
+        "530px",
+        "95px",
+        "xlwood",
+        "left",
+        500
+      );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        6000,
+        parentDiv,
+        "530px",
+        "120px",
+        "xlwood",
+        "left",
+        800
+      );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        5000,
+        parentDiv,
+        "530px",
+        "145px",
+        "longwood",
+        "left",
+        700
+      );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        4000,
+        parentDiv,
+        "25px",
+        "165px",
+        "shortwood",
+        "right",
+        600
+      );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        3000,
+        parentDiv,
+        "0px",
+        "190px",
+        "miniwood",
+        "right",
+        1000
+      );
+      //set up the road part
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        3000,
+        parentDiv,
+        "0px",
+        "265px",
+        "car",
+        "right",
+        1000
+      ),
+        setInterval(
+          this.appendDivToWaterAndRoadPart,
+          3000,
+          parentDiv,
+          "25px",
+          "290px",
+          "tank",
+          "right",
+          600
+        );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        2000,
+        parentDiv,
+        "530px",
+        "315px",
+        "rocket",
+        "left",
+        300
+      );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        5000,
+        parentDiv,
+        "530px",
+        "340px",
+        "train",
+        "left",
+        600
+      );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        3000,
+        parentDiv,
+        "0px",
+        "365px",
+        "car",
+        "right",
+        1000
+      );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        4000,
+        parentDiv,
+        "25px",
+        "390px",
+        "tank",
+        "right",
+        800
+      );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        3000,
+        parentDiv,
+        "530px",
+        "415px",
+        "rocket",
+        "left",
+        200
+      );
+      setInterval(
+        this.appendDivToWaterAndRoadPart,
+        6000,
+        parentDiv,
+        "530px",
+        "440px",
+        "train",
+        "left",
+        600
+      );
     },
-    move() {
-      let left = this.child.style.left;
-      if (left === "559px") {
-        this.child.style.left =
-          parseInt(left.slice(0, left.length - 2)) - 25 + "px";
+    appendDivToWaterAndRoadPart(
+      parentDiv,
+      left,
+      top,
+      className,
+      direction,
+      time
+    ) {
+      let child = document.createElement("div");
+      parentDiv.appendChild(child);
+      child.style.left = left;
+      child.style.top = top;
+      child.classList.add(className);
+      setInterval(this.moveCars, time, parentDiv, child, direction);
+    },
+    moveCars(parentDiv, child, direction) {
+      let left = child.style.left;
+      left = parseInt(left.slice(0, left.length - 2));
+      console.log(left);
+      if (direction === "right") {
+        if (left > 560) {
+          //parentDiv.remove(child);
+          child.style.display = "none";
+        } else {
+          child.style.left = left + 25 + "px";
+        }
       } else {
-        this.child.style.left =
-          parseInt(left.slice(0, left.length - 2)) + 25 + "px";
+        if (left < 25) {
+          //parentDiv.remove(child);
+          child.style.display = "none";
+        } else {
+          child.style.left = left - 25 + "px";
+        }
       }
     }
   }
@@ -83,6 +273,7 @@ export default {
   background-color: #dfcef0;
   width: 4%;
   height: 100%;
+  background-blend-mode: multiply;
 }
 .frog-grid div {
   width: 100%;
@@ -96,9 +287,52 @@ export default {
   padding: 2px;
   border-radius: 10%;
 }
+.xlwood {
+  background-image: url("../assets/xlwood.png");
+  width: 100px;
+  height: 25px;
+  position: absolute;
+}
 .longwood {
   background-image: url("../assets/longwood.png");
   width: 75px;
+  height: 25px;
+  position: absolute;
+}
+.shortwood {
+  background-image: url("../assets/shortwood.png");
+  width: 50px;
+  height: 25px;
+  position: absolute;
+}
+.miniwood {
+  background-image: url("../assets/miniwood.png");
+  width: 25px;
+  height: 25px;
+  position: absolute;
+}
+.car {
+  background-image: url("../assets/car.png");
+  width: 25px;
+  height: 25px;
+  position: absolute;
+}
+.tank {
+  background-image: url("../assets/tank.png");
+  width: 50px;
+  height: 25px;
+  position: absolute;
+}
+.rocket {
+  background-image: url("../assets/rocket.png");
+  width: 75px;
+  height: 25px;
+  position: absolute;
+}
+.train {
+  background-image: url("../assets/train.png");
+
+  width: 100px;
   height: 25px;
   position: absolute;
 }
