@@ -26,9 +26,11 @@ export default {
       destination: 0,
       frogLeft: 0,
       frogTop: 0,
-      water: [12, 13, 14, 15, 16, 17, 18, 19],
-      road: [22, 23, 24, 25, 26, 27, 28, 29],
-      grass: [11, 20, 21, 30]
+      allClasses: {
+        water: [12, 13, 14, 15, 16, 17, 18, 19],
+        road: [22, 23, 24, 25, 26, 27, 28, 29],
+        grass: [11, 20, 21, 30]
+      }
     };
   },
   methods: {
@@ -37,11 +39,11 @@ export default {
       //set up the board
       let allElements = document.querySelectorAll(".frog-grid div");
       allElements.forEach(element => {
-        if (this.water.includes(Math.floor(element.id / 100)))
+        if (this.allClasses.water.includes(Math.floor(element.id / 100)))
           element.classList.add("water");
-        else if (this.road.includes(Math.floor(element.id / 100)))
+        else if (this.allClasses.road.includes(Math.floor(element.id / 100)))
           element.classList.add("road");
-        else if (this.grass.includes(Math.floor(element.id / 100)))
+        else if (this.allClasses.grass.includes(Math.floor(element.id / 100)))
           element.classList.add("grass");
       });
       let parentDiv = document.getElementsByClassName("frog-board")[0];
@@ -209,7 +211,6 @@ export default {
       );
       this.startPoint = `${30}${Math.floor(Math.random() * 15) + 11}`;
       this.destination = `${11}${Math.floor(Math.random() * 15) + 11}`;
-      console.log(this.startPoint, this.destination);
       document.getElementById(this.startPoint).classList.remove("grass");
       document.getElementById(this.destination).classList.remove("grass");
       document.getElementById(this.startPoint).classList.add("frog");
@@ -265,18 +266,65 @@ export default {
         console.log(this.startPoint % 100);
         if (this.startPoint % 100 > 11) {
           document.getElementById(this.startPoint).classList.remove("frog");
-          document.getElementById(this.startPoint).classList.add("grass");
+          document
+            .getElementById(this.startPoint)
+            .classList.add(this.checkWitchClassToRemoveOrAdd());
           this.startPoint--;
-          document.getElementById(this.startPoint).classList.remove("grass");
+          document
+            .getElementById(this.startPoint)
+            .classList.remove(this.checkWitchClassToRemoveOrAdd());
           document.getElementById(this.startPoint).classList.add("frog");
         }
       }
-      // //go up
-      // if (e.code === "ArrowUp") {
-      // }
-      // //go down
-      // if (e.code === "ArrowDown") {
-      // }
+      //go up
+      if (e.code === "ArrowUp") {
+        console.log(this.startPoint / 100 > 11);
+        if (this.startPoint / 100 > 11) {
+          document.getElementById(this.startPoint).classList.remove("frog");
+          document
+            .getElementById(this.startPoint)
+            .classList.add(this.checkWitchClassToRemoveOrAdd());
+          this.startPoint = parseInt(this.startPoint) - 100;
+
+          document
+            .getElementById(this.startPoint)
+            .classList.remove(this.checkWitchClassToRemoveOrAdd());
+          document.getElementById(this.startPoint).classList.add("frog");
+        }
+      }
+      //go down
+      if (e.code === "ArrowDown") {
+        if (this.startPoint / 100 < 30) {
+          document.getElementById(this.startPoint).classList.remove("frog");
+          document
+            .getElementById(this.startPoint)
+            .classList.add(this.checkWitchClassToRemoveOrAdd());
+          this.startPoint = parseInt(this.startPoint) + 100;
+          document
+            .getElementById(this.startPoint)
+            .classList.remove(this.checkWitchClassToRemoveOrAdd());
+          document.getElementById(this.startPoint).classList.add("frog");
+        }
+      }
+    },
+    moveFrogAllDirections(offset) {
+      document.getElementById(this.startPoint).classList.remove("frog");
+      document
+        .getElementById(this.startPoint)
+        .classList.add(this.checkWitchClassToRemoveOrAdd());
+      this.startPoint = parseInt(this.startPoint) + offset;
+      document
+        .getElementById(this.startPoint)
+        .classList.remove(this.checkWitchClassToRemoveOrAdd());
+      document.getElementById(this.startPoint).classList.add("frog");
+    },
+    checkWitchClassToRemoveOrAdd() {
+      for (let className in this.allClasses) {
+        if (
+          this.allClasses[className].includes(Math.floor(this.startPoint / 100))
+        )
+          return className;
+      }
     }
   }
 };
