@@ -43,7 +43,8 @@ export default {
       currentDirection: "right",
       movedDown: true,
       currentLazer: 0,
-      speed: 0.8
+      speed: 0.8,
+      startGamePressed: 0
     };
   },
   methods: {
@@ -55,11 +56,28 @@ export default {
       document.getElementById("myModal").style.display = "none";
     },
     startGame() {
-      this.resetData();
-      window.addEventListener("keydown", this.moveweaponPosition);
-      window.addEventListener("keyup", this.fire);
+      let element = document.querySelector(".space-btn");
+      if (this.startGamePressed === 0) {
+        this.resetData();
+        window.addEventListener("keydown", this.moveweaponPosition);
+        window.addEventListener("keyup", this.fire);
+        element.textContent = "Pause";
+      } else {
+        if (this.startGamePressed % 2 === 1) {
+          clearInterval(this.invaderInterval);
+          element.textContent = "Resume";
+        } else {
+          this.invaderInterval = setInterval(
+            this.moveInvaders,
+            1000 * this.speed
+          );
+          element.textContent = "Pause";
+        }
+      }
+      this.startGamePressed++;
     },
     resetData() {
+      this.startGamePressed = 0;
       this.currentLazer = 0;
       this.speed = 0.8;
       this.movedDown = true;
@@ -283,7 +301,6 @@ h3 {
   width: 82%;
   height: 80%;
   margin-bottom: 10px;
-  border: 1px #0cc solid;
   background-color: #e6ffff;
 }
 .space-grid {

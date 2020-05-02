@@ -7,6 +7,7 @@ import WhackTheMole from '@/components/WhackTheMole'
 import FiveInARow from '@/components/FiveInARow'
 import Snake from '@/components/Snake'
 import SpaceInvaders from '@/components/SpaceInvaders'
+import Frogger from '@/components/Frogger'
 
 
 
@@ -37,6 +38,10 @@ const router = new Router({
     {
       path: '/spaceInvaders',
       component: SpaceInvaders
+    },
+    {
+      path: '/frogger',
+      component: Frogger
     }
   ]
 })

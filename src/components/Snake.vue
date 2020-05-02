@@ -40,7 +40,8 @@ export default {
       currentDirection: "ArrowRight",
       offset: 1,
       collision: false,
-      score: 0
+      score: 0,
+      startBtnPressCount: 0
     };
   },
   methods: {
@@ -52,8 +53,21 @@ export default {
       document.getElementById("myModal").style.display = "none";
     },
     startGame() {
-      this.resetData();
-      window.addEventListener("keydown", this.controlSnake);
+      let element = document.querySelector(".snake-btn");
+      if (this.startBtnPressCount === 0) {
+        this.resetData();
+        element.textContent = "Pause";
+        window.addEventListener("keydown", this.controlSnake);
+      } else if (this.startBtnPressCount > 0) {
+        if (this.startBtnPressCount % 2 === 1) {
+          clearInterval(this.snakeInterval);
+          element.textContent = "Resume";
+        } else {
+          this.setSnakeIntervals(this.currentDirection, this.offset);
+          element.textContent = "Pause";
+        }
+      }
+      this.startBtnPressCount++;
     },
     resetData() {
       this.removeSnake();
@@ -63,6 +77,7 @@ export default {
       this.score = 0;
       this.collision = false;
       this.snakeInterval = null;
+      this.startBtnPressCount = 0;
       this.setSnakeIntervals("ArrowRight", 1);
       this.collisionInterval = setInterval(
         this.checkCollision,

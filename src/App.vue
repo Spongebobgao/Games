@@ -31,6 +31,9 @@
       <v-btn @click="navigateTo('/spaceInvaders')" text>
         <span class="mr-2">Space Invaders</span>
       </v-btn>
+      <v-btn @click="navigateTo('/frogger')" text>
+        <span class="mr-2">Frogger</span>
+      </v-btn>
     </v-app-bar>
 
     <v-content>
@@ -47,7 +50,7 @@ export default {
   methods: {
     navigateTo(path) {
       this.$router.push(path);
-      window.location.reload();
+      // window.location.reload();
     }
   }
 };
