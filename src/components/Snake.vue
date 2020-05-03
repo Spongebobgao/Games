@@ -280,6 +280,7 @@ h3 {
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
   background-color: rgba(0, 0, 0, 0.3); /* Black w/ opacity */
+  z-index: 5;
 }
 .modal-content {
   background-color: #fff5ee;

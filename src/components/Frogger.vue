@@ -9,6 +9,13 @@
       <div v-for="m in 25" :key="m" class="frog-grid">
         <div v-for="n in 20" :key="n" :id="`${(n+10)}${(m+10)}`"></div>
       </div>
+      <div id="myModal" class="modal">
+        <div class="modal-content">
+          <span class="startOver" @click="startOver">Play Again</span>
+          <span @click="closeModal" class="close">&times;</span>
+          <p id="content"></p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -17,11 +24,12 @@
 export default {
   data() {
     return {
-      timeLeft: 0,
+      timeLeft: 60,
       startPoint: 0,
       destination: 0,
       frogLeft: 0,
       frogTop: 0,
+      destinationLeft: 0,
       frog: null,
       allClasses: {
         water: [12, 13, 14, 15, 16, 17, 18, 19],
@@ -31,9 +39,20 @@ export default {
     };
   },
   methods: {
+    startOver() {
+      this.startGame();
+      this.closeModal();
+    },
+    closeModal() {
+      document.getElementById("myModal").style.display = "none";
+    },
     startGame() {
       window.addEventListener("keydown", this.moveFrog);
       //set up the board
+      this.timeLeft = 60;
+      setInterval(() => {
+        if (this.timeLeft > 0) this.timeLeft--;
+      }, 1000);
       let allElements = document.querySelectorAll(".frog-grid div");
       allElements.forEach(element => {
         if (this.allClasses.water.includes(Math.floor(element.id / 100)))
@@ -49,8 +68,8 @@ export default {
         this.appendDivToWaterAndRoadPart,
         2000,
         parentDiv,
-        "615px",
-        "20px",
+        "600px",
+        "25px",
         "miniwood",
         "left",
         1000
@@ -60,7 +79,7 @@ export default {
         3000,
         parentDiv,
         "25px",
-        "45px",
+        "50px",
         "shortwood",
         "right",
         800
@@ -69,8 +88,8 @@ export default {
         this.appendDivToWaterAndRoadPart,
         4000,
         parentDiv,
-        "530px",
-        "70px",
+        "525px",
+        "75px",
         "longwood",
         "left",
         600
@@ -79,8 +98,8 @@ export default {
         this.appendDivToWaterAndRoadPart,
         5000,
         parentDiv,
-        "530px",
-        "95px",
+        "525px",
+        "100px",
         "xlwood",
         "left",
         500
@@ -89,8 +108,8 @@ export default {
         this.appendDivToWaterAndRoadPart,
         6000,
         parentDiv,
-        "530px",
-        "120px",
+        "525px",
+        "125px",
         "xlwood",
         "left",
         800
@@ -99,8 +118,8 @@ export default {
         this.appendDivToWaterAndRoadPart,
         5000,
         parentDiv,
-        "530px",
-        "145px",
+        "525px",
+        "150px",
         "longwood",
         "left",
         700
@@ -110,7 +129,7 @@ export default {
         4000,
         parentDiv,
         "25px",
-        "165px",
+        "175px",
         "shortwood",
         "right",
         600
@@ -120,7 +139,7 @@ export default {
         3000,
         parentDiv,
         "0px",
-        "190px",
+        "200px",
         "miniwood",
         "right",
         1000
@@ -131,7 +150,7 @@ export default {
         3000,
         parentDiv,
         "0px",
-        "265px",
+        "275px",
         "car",
         "right",
         1000
@@ -141,7 +160,7 @@ export default {
           3000,
           parentDiv,
           "25px",
-          "290px",
+          "300px",
           "tank",
           "right",
           600
@@ -150,8 +169,8 @@ export default {
         this.appendDivToWaterAndRoadPart,
         2000,
         parentDiv,
-        "530px",
-        "315px",
+        "525px",
+        "325px",
         "rocket",
         "left",
         300
@@ -160,8 +179,8 @@ export default {
         this.appendDivToWaterAndRoadPart,
         5000,
         parentDiv,
-        "530px",
-        "340px",
+        "525px",
+        "350px",
         "train",
         "left",
         600
@@ -171,7 +190,7 @@ export default {
         3000,
         parentDiv,
         "0px",
-        "365px",
+        "375px",
         "car",
         "right",
         1000
@@ -181,7 +200,7 @@ export default {
         4000,
         parentDiv,
         "25px",
-        "390px",
+        "400px",
         "tank",
         "right",
         800
@@ -190,8 +209,8 @@ export default {
         this.appendDivToWaterAndRoadPart,
         3000,
         parentDiv,
-        "530px",
-        "415px",
+        "525px",
+        "425px",
         "rocket",
         "left",
         200
@@ -200,25 +219,24 @@ export default {
         this.appendDivToWaterAndRoadPart,
         6000,
         parentDiv,
-        "530px",
-        "440px",
+        "525px",
+        "450px",
         "train",
         "left",
         600
       );
       this.startPoint = `${30}${Math.floor(Math.random() * 15) + 11}`;
       this.destination = `${11}${Math.floor(Math.random() * 15) + 11}`;
-      this.frogLeft = ((this.startPoint % 100) - 10) * 25.6;
-      this.frogTop = 19 * 24.4;
+      document.getElementById(this.destination).classList.remove("grass");
+      document.getElementById(this.destination).classList.add("home");
+      this.destinationLeft = ((this.destination % 100) - 10 - 1) * 25;
+      this.frogLeft = ((this.startPoint % 100) - 10 - 1) * 25;
+      this.frogTop = 19 * 25;
       this.frog = document.createElement("div");
       parentDiv.appendChild(this.frog);
       this.frog.style.left = this.frogLeft + "px";
       this.frog.style.top = this.frogTop + "px";
       this.frog.classList.add("frog");
-      // document.getElementById(this.startPoint).classList.remove("grass");
-      // document.getElementById(this.destination).classList.remove("grass");
-      // document.getElementById(this.startPoint).classList.add("frog");
-      // document.getElementById(this.destination).classList.add("frog");
     },
     appendDivToWaterAndRoadPart(
       parentDiv,
@@ -241,15 +259,13 @@ export default {
       left = parseInt(left.slice(0, left.length - 2));
       this.checkIfFrogGotHit(left, top);
       if (direction === "right") {
-        if (left > 560) {
-          //parentDiv.remove(child);
+        if (left > 550) {
           child.style.display = "none";
         } else {
           child.style.left = left + 25 + "px";
         }
       } else {
         if (left < 25) {
-          //parentDiv.remove(child);
           child.style.display = "none";
         } else {
           child.style.left = left - 25 + "px";
@@ -257,21 +273,19 @@ export default {
       }
     },
     checkIfFrogGotHit(left, top) {
-      let frogLeft = (Math.floor(this.startPoint % 100) - 10) * 25.6;
-      let frogTop = (Math.floor(this.startPoint / 100) - 10) * 24.4;
-      if (
-        Math.floor(this.startPoint / 100) <= 29 &&
-        Math.floor(this.startPoint / 100) >= 22
-      ) {
-        if (Math.abs(frogLeft - left) < 25 && Math.abs(frogTop - top) < 5) {
-          console.log("game over road");
+      //check the road aera top 265 bottom 465
+      if (this.frogTop > 275 && this.frogTop === top) {
+        if (this.frogLeft === left) {
+          document.getElementById("content").innerHTML = "Game Over";
+          document.getElementById("myModal").style.display = "block";
         }
       } else if (
-        Math.floor(this.startPoint / 100) <= 19 &&
-        Math.floor(this.startPoint / 100) >= 12
+        (this.frogTop > 25) & (this.frogTop < 200) &&
+        this.frogTop === top
       ) {
-        if (Math.abs(frogLeft - left) > 26 && Math.abs(frogTop - top) < 5) {
-          console.log("game over water");
+        if (this.frogLeft === left) {
+          document.getElementById("content").innerHTML = "Game Over";
+          document.getElementById("myModal").style.display = "block";
         }
       }
     },
@@ -284,22 +298,25 @@ export default {
       }
       //go to the left
       if (e.code === "ArrowLeft") {
-        if (this.frogLeft > 5) {
+        if (this.frogLeft >= 25) {
           this.moveFrogAllDirections(-25, 0);
         }
       }
       //go up
       if (e.code === "ArrowUp") {
-        if (this.frogTop > 11) {
-          this.moveFrogAllDirections(0, -24.4);
+        if (this.frogTop >= 25) {
+          this.moveFrogAllDirections(0, -25);
         }
       }
       //go down
       if (e.code === "ArrowDown") {
-        console.log(this.startPoint / 100, this.startPoint / 100 < 30);
-        if (this.frogTop < 460) {
-          this.moveFrogAllDirections(0, 24.4);
+        if (this.frogTop < 475) {
+          this.moveFrogAllDirections(0, 25);
         }
+      }
+      if (this.frogLeft === this.destinationLeft && this.frogTop === 0) {
+        document.getElementById("content").innerHTML = "You Win";
+        document.getElementById("myModal").style.display = "block";
       }
     },
     moveFrogAllDirections(left, top) {
@@ -307,23 +324,6 @@ export default {
       this.frogLeft = this.frogLeft + left;
       this.frog.style.left = this.frogLeft + "px";
       this.frog.style.top = this.frogTop + "px";
-      // document.getElementById(this.startPoint).classList.remove("frog");
-      // document
-      //   .getElementById(this.startPoint)
-      //   .classList.add(this.checkWitchClassToRemoveOrAdd());
-      // this.startPoint = parseInt(this.startPoint) + offset;
-      // document
-      //   .getElementById(this.startPoint)
-      //   .classList.remove(this.checkWitchClassToRemoveOrAdd());
-      // document.getElementById(this.startPoint).classList.add("frog");
-    },
-    checkWitchClassToRemoveOrAdd() {
-      for (let className in this.allClasses) {
-        if (
-          this.allClasses[className].includes(Math.floor(this.startPoint / 100))
-        )
-          return className;
-      }
     }
   }
 };
@@ -341,22 +341,24 @@ export default {
   display: flex;
   /* width: 70%; */
   flex-wrap: wrap;
-  width: calc(100vw * 0.5);
-  height: calc(100vh * 0.8);
+  /* width: calc(100vw * 0.5);
+  height: calc(100vh * 0.8); */
+  width: 625px;
+  height: 500px;
   position: relative;
   justify-content: center;
   left: 25%;
+  background-image: url("../assets/frog-board.png");
 }
 .frog-grid {
-  background-color: #dfcef0;
   width: 4%;
   height: 100%;
-  background-blend-mode: multiply;
 }
 .frog-grid div {
-  width: 100%;
-  height: 5%;
-  /* border: black 1px solid; */
+  /* width: 100%;
+  height: 5%; */
+  width: 25px;
+  height: 25px;
 }
 .frog-btn {
   font-size: 0.9rem;
@@ -428,5 +430,8 @@ export default {
 }
 .road {
   background-image: url("../assets/road.png");
+}
+.home {
+  background-image: url("../assets/home.png");
 }
 </style>
