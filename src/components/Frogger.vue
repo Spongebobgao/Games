@@ -22,6 +22,7 @@ export default {
       destination: 0,
       frogLeft: 0,
       frogTop: 0,
+      frog: null,
       allClasses: {
         water: [12, 13, 14, 15, 16, 17, 18, 19],
         road: [22, 23, 24, 25, 26, 27, 28, 29],
@@ -207,10 +208,17 @@ export default {
       );
       this.startPoint = `${30}${Math.floor(Math.random() * 15) + 11}`;
       this.destination = `${11}${Math.floor(Math.random() * 15) + 11}`;
-      document.getElementById(this.startPoint).classList.remove("grass");
-      document.getElementById(this.destination).classList.remove("grass");
-      document.getElementById(this.startPoint).classList.add("frog");
-      document.getElementById(this.destination).classList.add("frog");
+      this.frogLeft = ((this.startPoint % 100) - 10) * 25.6;
+      this.frogTop = 19 * 24.4;
+      this.frog = document.createElement("div");
+      parentDiv.appendChild(this.frog);
+      this.frog.style.left = this.frogLeft + "px";
+      this.frog.style.top = this.frogTop + "px";
+      this.frog.classList.add("frog");
+      // document.getElementById(this.startPoint).classList.remove("grass");
+      // document.getElementById(this.destination).classList.remove("grass");
+      // document.getElementById(this.startPoint).classList.add("frog");
+      // document.getElementById(this.destination).classList.add("frog");
     },
     appendDivToWaterAndRoadPart(
       parentDiv,
@@ -229,7 +237,9 @@ export default {
     },
     moveAppendedDivs(parentDiv, child, direction) {
       let left = child.style.left;
+      let top = parseInt(child.style.top.slice(0, left.length - 2));
       left = parseInt(left.slice(0, left.length - 2));
+      this.checkIfFrogGotHit(left, top);
       if (direction === "right") {
         if (left > 560) {
           //parentDiv.remove(child);
@@ -246,44 +256,66 @@ export default {
         }
       }
     },
+    checkIfFrogGotHit(left, top) {
+      let frogLeft = (Math.floor(this.startPoint % 100) - 10) * 25.6;
+      let frogTop = (Math.floor(this.startPoint / 100) - 10) * 24.4;
+      if (
+        Math.floor(this.startPoint / 100) <= 29 &&
+        Math.floor(this.startPoint / 100) >= 22
+      ) {
+        if (Math.abs(frogLeft - left) < 25 && Math.abs(frogTop - top) < 5) {
+          console.log("game over road");
+        }
+      } else if (
+        Math.floor(this.startPoint / 100) <= 19 &&
+        Math.floor(this.startPoint / 100) >= 12
+      ) {
+        if (Math.abs(frogLeft - left) > 26 && Math.abs(frogTop - top) < 5) {
+          console.log("game over water");
+        }
+      }
+    },
     moveFrog(e) {
       //go to the right
       if (e.code === "ArrowRight") {
-        if (this.startPoint % 100 < 35) {
-          this.moveFrogAllDirections(1);
+        if (this.frogLeft < 600) {
+          this.moveFrogAllDirections(25, 0);
         }
       }
       //go to the left
       if (e.code === "ArrowLeft") {
-        console.log(this.startPoint % 100);
-        if (this.startPoint % 100 > 11) {
-          this.moveFrogAllDirections(-1);
+        if (this.frogLeft > 5) {
+          this.moveFrogAllDirections(-25, 0);
         }
       }
       //go up
       if (e.code === "ArrowUp") {
-        console.log(this.startPoint / 100 > 11);
-        if (Math.floor(this.startPoint / 100) > 11) {
-          this.moveFrogAllDirections(-100);
+        if (this.frogTop > 11) {
+          this.moveFrogAllDirections(0, -24.4);
         }
       }
       //go down
       if (e.code === "ArrowDown") {
-        if (this.startPoint / 100 < 30) {
-          this.moveFrogAllDirections(100);
+        console.log(this.startPoint / 100, this.startPoint / 100 < 30);
+        if (this.frogTop < 460) {
+          this.moveFrogAllDirections(0, 24.4);
         }
       }
     },
-    moveFrogAllDirections(offset) {
-      document.getElementById(this.startPoint).classList.remove("frog");
-      document
-        .getElementById(this.startPoint)
-        .classList.add(this.checkWitchClassToRemoveOrAdd());
-      this.startPoint = parseInt(this.startPoint) + offset;
-      document
-        .getElementById(this.startPoint)
-        .classList.remove(this.checkWitchClassToRemoveOrAdd());
-      document.getElementById(this.startPoint).classList.add("frog");
+    moveFrogAllDirections(left, top) {
+      this.frogTop = this.frogTop + top;
+      this.frogLeft = this.frogLeft + left;
+      this.frog.style.left = this.frogLeft + "px";
+      this.frog.style.top = this.frogTop + "px";
+      // document.getElementById(this.startPoint).classList.remove("frog");
+      // document
+      //   .getElementById(this.startPoint)
+      //   .classList.add(this.checkWitchClassToRemoveOrAdd());
+      // this.startPoint = parseInt(this.startPoint) + offset;
+      // document
+      //   .getElementById(this.startPoint)
+      //   .classList.remove(this.checkWitchClassToRemoveOrAdd());
+      // document.getElementById(this.startPoint).classList.add("frog");
     },
     checkWitchClassToRemoveOrAdd() {
       for (let className in this.allClasses) {
@@ -383,7 +415,10 @@ export default {
 }
 .frog {
   background-image: url("../assets/frog.png");
-  background-color: white;
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  z-index: 3;
 }
 .grass {
   background-image: url("../assets/grass.png");
