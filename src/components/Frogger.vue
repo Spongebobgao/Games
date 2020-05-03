@@ -35,7 +35,8 @@ export default {
         water: [12, 13, 14, 15, 16, 17, 18, 19],
         road: [22, 23, 24, 25, 26, 27, 28, 29],
         grass: [11, 20, 21, 30]
-      }
+      },
+      timeLeftInterVal: null
     };
   },
   methods: {
@@ -50,7 +51,7 @@ export default {
       window.addEventListener("keydown", this.moveFrog);
       //set up the board
       this.timeLeft = 60;
-      setInterval(() => {
+      this.timeLeftInterVal = setInterval(() => {
         if (this.timeLeft > 0) this.timeLeft--;
       }, 1000);
       let allElements = document.querySelectorAll(".frog-grid div");
@@ -278,6 +279,7 @@ export default {
         if (this.frogLeft === left) {
           document.getElementById("content").innerHTML = "Game Over";
           document.getElementById("myModal").style.display = "block";
+          this.stopGame();
         }
       } else if (
         (this.frogTop > 25) & (this.frogTop < 200) &&
@@ -286,6 +288,7 @@ export default {
         if (this.frogLeft === left) {
           document.getElementById("content").innerHTML = "Game Over";
           document.getElementById("myModal").style.display = "block";
+          this.stopGame();
         }
       }
     },
@@ -315,8 +318,10 @@ export default {
         }
       }
       if (this.frogLeft === this.destinationLeft && this.frogTop === 0) {
+        this.stopGame();
         document.getElementById("content").innerHTML = "You Win";
         document.getElementById("myModal").style.display = "block";
+        this.stopGame();
       }
     },
     moveFrogAllDirections(left, top) {
@@ -324,6 +329,10 @@ export default {
       this.frogLeft = this.frogLeft + left;
       this.frog.style.left = this.frogLeft + "px";
       this.frog.style.top = this.frogTop + "px";
+    },
+    stopGame() {
+      clearInterval(this.timeLeftInterVal);
+      setTimeout(() => window.location.reload(), 1000);
     }
   }
 };
