@@ -8,6 +8,7 @@ import FiveInARow from '@/components/FiveInARow'
 import Snake from '@/components/Snake'
 import SpaceInvaders from '@/components/SpaceInvaders'
 import Frogger from '@/components/Frogger'
+import Tetris from '@/components/Tetris'
 
 
 
@@ -42,6 +43,10 @@ const router = new Router({
     {
       path: '/frogger',
       component: Frogger
+    },
+    {
+      path: '/tetris',
+      component: Tetris
     }
   ]
 })

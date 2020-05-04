@@ -34,6 +34,9 @@
       <v-btn @click="navigateTo('/frogger')" text>
         <span class="mr-2">Frogger</span>
       </v-btn>
+      <v-btn @click="navigateTo('/tetris')" text>
+        <span class="mr-2">Tetris</span>
+      </v-btn>
     </v-app-bar>
 
     <v-content>
