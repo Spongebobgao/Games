@@ -28,7 +28,7 @@
     </v-container>
     <div class="tetris-board">
       <div v-for="m in 10" :key="m+10" class="tetris-grid">
-        <div v-for="n in 20" :key="n+10" :id="`${(n+10)}${(m+10)}`">{{n+10}}{{m+10}}</div>
+        <div v-for="n in 20" :key="n+10" :id="`${(n+10)}${(m+10)}`"></div>
       </div>
     </div>
   </v-card>
@@ -52,7 +52,29 @@ export default {
       currentRight: 0,
       currentBottom: 0,
       score: 0,
-      timeUsed: 0
+      timeUsed: 0,
+      occupiedDivsPerRow: {
+        11: [],
+        12: [],
+        13: [],
+        14: [],
+        15: [],
+        16: [],
+        17: [],
+        18: [],
+        19: [],
+        20: [],
+        21: [],
+        22: [],
+        23: [],
+        24: [],
+        25: [],
+        26: [],
+        27: [],
+        28: [],
+        29: [],
+        30: []
+      }
     };
   },
   methods: {
@@ -68,16 +90,16 @@ export default {
       this.newShape();
     },
     newShape() {
-      //const keys = Object.keys(this.allTheshapes);
-      //this.currentShape = keys[Math.floor(Math.random() * keys.length)];
       this.tranformTimes = 0;
-      this.currentShape = "dotshape";
-      this.setNewCurrentLeftAndRight();
+      clearInterval(this.movedownInterval);
+      const keys = Object.keys(this.allTheshapes);
+      this.currentShape = keys[Math.floor(Math.random() * keys.length)];
       this.currentShapeArray = this.allTheshapes[this.currentShape];
       this.currentShapeArray.forEach(element => {
         document.getElementById(element).classList.add(this.currentShape);
       });
-      this.movedownInterval = setInterval(this.moveShape, 2000, 100);
+      this.setNewCurrentLeftAndRight();
+      this.movedownInterval = setInterval(this.moveShape, 1000, 100);
     },
     setNewCurrentLeftAndRight() {
       switch (this.currentShape) {
@@ -109,28 +131,44 @@ export default {
       }
     },
     moveShape(offset) {
-      // this.checkIfShapeHitBottom();
-      this.currentShapeArray.forEach(element => {
-        document.getElementById(element).classList.remove(this.currentShape);
-      });
-      this.currentShapeArray = this.currentShapeArray.map(
+      if (this.checkIfDivsAvailable(offset)) {
+        this.currentShapeArray.forEach(element => {
+          document.getElementById(element).classList.remove(this.currentShape);
+        });
+        this.currentShapeArray = this.currentShapeArray.map(
+          element => (element = parseInt(element) + offset)
+        );
+        this.updateTheBoard(this.currentShapeArray);
+      } else {
+        this.newShape();
+      }
+    },
+    checkIfDivsAvailable(offset) {
+      let newArray = this.currentShapeArray.slice(0, 4);
+      let newArrayWithOffset = newArray.map(
         element => (element = parseInt(element) + offset)
       );
-      this.currentShapeArray.forEach(element => {
-        document.getElementById(element).classList.add(this.currentShape);
-      });
-      this.currentBottom -= 20;
-      // if (this.currentBottom === 0) {
-      //   clearInterval(this.movedownInterval);
-      //   this.newShape();
-      // }
+      for (let i = 0; i < newArray.length; i++) {
+        if (
+          Math.floor(newArray[i] / 100) === 30 ||
+          this.occupiedDivsPerRow[
+            Math.floor(newArrayWithOffset[i] / 100)
+          ].includes(newArrayWithOffset[i])
+        ) {
+          newArray.forEach(element => {
+            if (
+              !this.occupiedDivsPerRow[Math.floor(element / 100)].includes(
+                element
+              )
+            ) {
+              this.occupiedDivsPerRow[Math.floor(element / 100)].push(element);
+            }
+          });
+          return false;
+        }
+      }
+      return true;
     },
-    // checkIfShapeHitBottom() {
-    //   if (Math.floor(this.currentShapeArray.slice(0, 4)[3] / 100) === 27) {
-    //     clearInterval(this.movedownInterval);
-    //     this.newShape();
-    //   }
-    // },
     transformShape() {
       this.currentShapeArray.forEach(element => {
         document.getElementById(element).classList.remove(this.currentShape);
@@ -156,28 +194,20 @@ export default {
       if (this.tranformTimes === 0) {
         element = this.currentShapeArray[0];
         newArray = [element, element + 100, element + 200, element + 300];
-        this.currentLeft -= 3 * 20;
-        this.currentRight += 3 * 20;
-        this.currentShapeArray = newArray;
-        this.currentShapeArray.forEach(element => {
-          document.getElementById(element).classList.add(this.currentShape);
-          this.tranformTimes++;
-        });
+        this.currentRight += 60;
+        this.updateTheBoard(newArray);
+        this.tranformTimes++;
       } else {
         this.tranformTimes = 0;
-        if (this.currentRight <= 3 * 20) {
-          element = this.currentShapeArray[3];
-          newArray = [element - 3, element - 2, element - 1, element];
-        } else {
-          element = this.currentShapeArray[0];
+        element = this.currentShapeArray[0];
+        if (this.currentLeft <= 60) {
           newArray = [element, element + 1, element + 2, element + 3];
-          this.currentLeft += 3 * 20;
-          this.currentRight -= 3 * 20;
+          this.currentRight -= 60;
+        } else {
+          newArray = [element - 3, element - 2, element - 1, element];
+          this.currentLeft -= 60;
         }
-        this.currentShapeArray = newArray;
-        this.currentShapeArray.forEach(element => {
-          document.getElementById(element).classList.add(this.currentShape);
-        });
+        this.updateTheBoard(newArray);
       }
     },
     transformLShape() {
@@ -187,10 +217,7 @@ export default {
         element = this.currentShapeArray[0];
         newArray = [element, element + 1, element + 100, element + 200];
         this.tranformTimes++;
-        this.currentShapeArray = newArray;
-        this.currentShapeArray.forEach(element => {
-          document.getElementById(element).classList.add(this.currentShape);
-        });
+        this.updateTheBoard(newArray);
         this.currentRight += 20;
       } else if (this.tranformTimes === 1) {
         element = this.currentShapeArray[2];
@@ -202,19 +229,13 @@ export default {
           this.currentLeft -= 20;
         }
         this.tranformTimes++;
-        this.currentShapeArray = newArray;
-        this.currentShapeArray.forEach(element => {
-          document.getElementById(element).classList.add(this.currentShape);
-        });
+        this.updateTheBoard(newArray);
       } else if (this.tranformTimes === 2) {
         element = this.currentShapeArray[1];
         newArray = [element - 100, element, element + 100 - 1, element + 100];
         this.currentRight += 20;
         this.tranformTimes++;
-        this.currentShapeArray = newArray;
-        this.currentShapeArray.forEach(element => {
-          document.getElementById(element).classList.add(this.currentShape);
-        });
+        this.updateTheBoard(newArray);
       } else if (this.tranformTimes === 3) {
         element = this.currentShapeArray[3];
         if (this.currentLeft === 0) {
@@ -224,10 +245,7 @@ export default {
           newArray = [element - 100 - 2, element - 2, element - 1, element];
           this.currentLeft -= 20;
         }
-        this.currentShapeArray = newArray;
-        this.currentShapeArray.forEach(element => {
-          document.getElementById(element).classList.add(this.currentShape);
-        });
+        this.updateTheBoard(newArray);
         this.tranformTimes = 0;
       }
     },
@@ -242,10 +260,7 @@ export default {
           element + 100 + 1,
           element + 200 + 1
         ];
-        this.currentShapeArray = newArray;
-        this.currentShapeArray.forEach(element => {
-          document.getElementById(element).classList.add(this.currentShape);
-        });
+        this.updateTheBoard(newArray);
         this.currentLeft += 20;
         this.tranformTimes++;
       } else {
@@ -262,10 +277,7 @@ export default {
           newArray = [element, element + 1, element + 100 - 1, element + 100];
           this.currentLeft -= 20;
         }
-        this.currentShapeArray = newArray;
-        this.currentShapeArray.forEach(element => {
-          document.getElementById(element).classList.add(this.currentShape);
-        });
+        this.updateTheBoard(newArray);
         this.tranformTimes = 0;
       }
     },
@@ -275,10 +287,7 @@ export default {
       if (this.tranformTimes === 0) {
         element = this.currentShapeArray[2];
         newArray = [element - 100, element, element + 1, element + 100];
-        this.currentShapeArray = newArray;
-        this.currentShapeArray.forEach(element => {
-          document.getElementById(element).classList.add(this.currentShape);
-        });
+        this.updateTheBoard(newArray);
         this.currentLeft += 20;
         this.tranformTimes++;
       } else if (this.tranformTimes === 1) {
@@ -290,18 +299,12 @@ export default {
           newArray = [element - 1, element, element + 1, element + 100];
           this.currentLeft -= 20;
         }
-        this.currentShapeArray = newArray;
-        this.currentShapeArray.forEach(element => {
-          document.getElementById(element).classList.add(this.currentShape);
-        });
+        this.updateTheBoard(newArray);
         this.tranformTimes++;
       } else if (this.tranformTimes === 2) {
         element = this.currentShapeArray[1];
         newArray = [element, element + 100 - 1, element + 100, element + 200];
-        this.currentShapeArray = newArray;
-        this.currentShapeArray.forEach(element => {
-          document.getElementById(element).classList.add(this.currentShape);
-        });
+        this.updateTheBoard(newArray);
         this.tranformTimes++;
         this.currentRight += 20;
       } else if (this.tranformTimes === 3) {
@@ -313,12 +316,15 @@ export default {
           newArray = [element - 1 - 100, element - 2, element - 1, element];
           this.currentLeft -= 20;
         }
-        this.currentShapeArray = newArray;
-        this.currentShapeArray.forEach(element => {
-          document.getElementById(element).classList.add(this.currentShape);
-        });
+        this.updateTheBoard(newArray);
         this.tranformTimes = 0;
       }
+    },
+    updateTheBoard(newArray) {
+      this.currentShapeArray = newArray;
+      this.currentShapeArray.forEach(element => {
+        document.getElementById(element).classList.add(this.currentShape);
+      });
     },
     moveAndTranform(e) {
       if (e.code === "ArrowLeft") {
@@ -366,7 +372,6 @@ h3 {
   width: 20px;
   height: 20px;
   /* border: rgb(174, 218, 226) 1px solid; */
-  font-size: 0.5rem;
 }
 .tetris-btn {
   float: right;
