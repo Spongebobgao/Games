@@ -59,23 +59,23 @@ export default {
     },
     startGame() {
       window.addEventListener("keydown", this.moveAndTranform);
-      this.initShape();
+      this.newShape();
     },
-    initShape() {
+    newShape() {
       const keys = Object.keys(this.allTheshapes);
       this.currentIndex = keys[Math.floor(Math.random() * keys.length)];
       this.currentShape = this.allTheshapes[this.currentIndex];
       this.currentShape.forEach(element => {
         document.getElementById(element).classList.add(this.currentIndex);
       });
-      this.movedownInterval = setInterval(this.moveShape, 1000);
+      this.movedownInterval = setInterval(this.moveShape, 1000, 100);
     },
-    moveShape() {
+    moveShape(offset) {
       this.currentShape.forEach(element => {
         document.getElementById(element).classList.remove(this.currentIndex);
       });
       this.currentShape = this.currentShape.map(
-        element => (element = parseInt(element) + 100)
+        element => (element = parseInt(element) + offset)
       );
       this.currentShape.forEach(element => {
         document.getElementById(element).classList.add(this.currentIndex);
@@ -83,37 +83,13 @@ export default {
     },
     moveAndTranform(e) {
       if (e.code === "ArrowLeft") {
-        this.currentShape.forEach(element => {
-          document.getElementById(element).classList.remove(this.currentIndex);
-        });
-        this.currentShape = this.currentShape.map(
-          element => (element = parseInt(element) - 1)
-        );
-        this.currentShape.forEach(element => {
-          document.getElementById(element).classList.add(this.currentIndex);
-        });
+        this.moveShape(-1);
       }
       if (e.code === "ArrowRight") {
-        this.currentShape.forEach(element => {
-          document.getElementById(element).classList.remove(this.currentIndex);
-        });
-        this.currentShape = this.currentShape.map(
-          element => (element = parseInt(element) + 1)
-        );
-        this.currentShape.forEach(element => {
-          document.getElementById(element).classList.add(this.currentIndex);
-        });
+        this.moveShape(1);
       }
       if (e.code === "ArrowDown") {
-        this.currentShape.forEach(element => {
-          document.getElementById(element).classList.remove(this.currentIndex);
-        });
-        this.currentShape = this.currentShape.map(
-          element => (element = parseInt(element) + 100)
-        );
-        this.currentShape.forEach(element => {
-          document.getElementById(element).classList.add(this.currentIndex);
-        });
+        this.moveShape(100);
       }
     }
   }
