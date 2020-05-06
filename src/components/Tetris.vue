@@ -81,7 +81,8 @@ export default {
         zshape: [],
         dotshape: []
       },
-      currentOffSet: 100
+      currentOffSet: 100,
+      timeInterval: null
     };
   },
   methods: {
@@ -94,10 +95,49 @@ export default {
     },
     startGame() {
       window.addEventListener("keydown", this.moveAndTranform);
+      this.resetData();
       this.newShape();
     },
-    newShape() {
+    resetData() {
+      if (this.timeInterval != null) clearInterval(this.timeInterval);
       this.tranformTimes = 0;
+      this.timeUsed = 0;
+      this.timeInterval = setInterval(() => this.timeUsed++, 1000);
+      this.currentOffSet = 100;
+      this.score = 0;
+      this.currentLeft = 0;
+      this.currentRight = 0;
+      this.occupiedDivsPerRow = {
+        11: 0,
+        12: 0,
+        13: 0,
+        14: 0,
+        15: 0,
+        16: 0,
+        17: 0,
+        18: 0,
+        19: 0,
+        20: 0,
+        21: 0,
+        22: 0,
+        23: 0,
+        24: 0,
+        25: 0,
+        26: 0,
+        27: 0,
+        28: 0,
+        29: 0,
+        30: 0
+      };
+      this.shapeOnBoard = {
+        square: [],
+        stick: [],
+        lshape: [],
+        zshape: [],
+        dotshape: []
+      };
+    },
+    newShape() {
       clearInterval(this.movedownInterval);
       const keys = Object.keys(this.allTheshapes);
       this.currentShape = keys[Math.floor(Math.random() * keys.length)];
