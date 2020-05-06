@@ -50,31 +50,38 @@ export default {
       tranformTimes: 0,
       currentLeft: 0,
       currentRight: 0,
-      currentBottom: 0,
       score: 0,
       timeUsed: 0,
       occupiedDivsPerRow: {
-        11: [],
-        12: [],
-        13: [],
-        14: [],
-        15: [],
-        16: [],
-        17: [],
-        18: [],
-        19: [],
-        20: [],
-        21: [],
-        22: [],
-        23: [],
-        24: [],
-        25: [],
-        26: [],
-        27: [],
-        28: [],
-        29: [],
-        30: []
-      }
+        11: 0,
+        12: 0,
+        13: 0,
+        14: 0,
+        15: 0,
+        16: 0,
+        17: 0,
+        18: 0,
+        19: 0,
+        20: 0,
+        21: 0,
+        22: 0,
+        23: 0,
+        24: 0,
+        25: 0,
+        26: 0,
+        27: 0,
+        28: 0,
+        29: 0,
+        30: 0
+      },
+      shapeOnBoard: {
+        square: [],
+        stick: [],
+        lshape: [],
+        zshape: [],
+        dotshape: []
+      },
+      currentOffSet: 100
     };
   },
   methods: {
@@ -106,32 +113,29 @@ export default {
         case "square":
           this.currentLeft = 4 * 20;
           this.currentRight = 4 * 20;
-          this.currentBottom = 18 * 20;
           break;
         case "stick":
           this.currentLeft = 3 * 20;
           this.currentRight = 3 * 20;
-          this.currentBottom = 19 * 20;
           break;
         case "lshape":
           this.currentLeft = 3 * 20;
           this.currentRight = 4 * 20;
-          this.currentBottom = 18 * 20;
           break;
         case "zshape":
           this.currentLeft = 3 * 20;
           this.currentRight = 4 * 20;
-          this.currentBottom = 18 * 20;
           break;
         case "dotshape":
           this.currentLeft = 4 * 20;
           this.currentRight = 3 * 20;
-          this.currentBottom = 18 * 20;
           break;
       }
     },
     moveShape(offset) {
+      this.currentOffSet = offset;
       if (this.checkIfDivsAvailable(offset)) {
+        offset = this.currentOffSet;
         this.currentShapeArray.forEach(element => {
           document.getElementById(element).classList.remove(this.currentShape);
         });
@@ -142,32 +146,131 @@ export default {
       } else {
         this.newShape();
       }
+      this.scoreAndUpdateBoard();
+    },
+    getElementsThatNeedToBeRemoved(shapeArray, shape, row) {
+      let elementNeedToBeRemoved = [];
+      shapeArray.forEach(element => {
+        if (Math.floor(element / 100) == row) {
+          document.getElementById(element).classList.remove(shape);
+          elementNeedToBeRemoved.push(element);
+        }
+      });
+      return elementNeedToBeRemoved;
+    },
+    removeElementNeedToBeRemoved(elementArray, shapeArray) {
+      for (let i = 0; i < elementArray.length; i++) {
+        this.occupiedDivsPerRow[Math.floor(elementArray[i] / 100)]--;
+        let index = shapeArray.indexOf(elementArray[i]);
+        shapeArray.splice(index, 1);
+      }
+      return shapeArray;
+    },
+    getElementsNeedToBeUpdated(shapeArray, shape, row) {
+      let elementNeedToBeUpdated = [];
+      shapeArray.forEach(element => {
+        if (Math.floor(element / 100) == row) {
+          elementNeedToBeUpdated.push(element);
+          document.getElementById(element).classList.remove(shape);
+          this.occupiedDivsPerRow[Math.floor(element / 100)]--;
+          element = parseInt(element) + 100;
+          document.getElementById(element).classList.add(shape);
+          this.occupiedDivsPerRow[Math.floor(element / 100)]++;
+        }
+      });
+      return elementNeedToBeUpdated;
+    },
+    updateElmentNeedToBeUpdated(elementArray, shapeArray) {
+      for (let i = 0; i < elementArray.length; i++) {
+        let index = shapeArray.indexOf(elementArray[i]);
+        shapeArray[index] += 100;
+      }
+      return shapeArray;
+    },
+    scoreAndUpdateBoard() {
+      let row = 30;
+      while (row > 11) {
+        if (this.occupiedDivsPerRow[row] == 10) {
+          this.score += 1000;
+          //loop shapeonboard remove elements that has the same row number as full row
+          for (let shape in this.shapeOnBoard) {
+            if (this.shapeOnBoard[shape].length > 0) {
+              let elementNeedToBeRemoved = this.getElementsThatNeedToBeRemoved(
+                this.shapeOnBoard[shape],
+                shape,
+                row
+              );
+              if (elementNeedToBeRemoved.length > 0) {
+                this.shapeOnBoard[shape] = this.removeElementNeedToBeRemoved(
+                  elementNeedToBeRemoved,
+                  this.shapeOnBoard[shape],
+                  shape
+                );
+              }
+            }
+          }
+          let elementNeedToBeUpdated = [];
+          for (let fullRow = row - 1; fullRow > 11; fullRow--) {
+            for (let shape in this.shapeOnBoard) {
+              if (this.shapeOnBoard[shape].length > 0) {
+                elementNeedToBeUpdated = this.getElementsNeedToBeUpdated(
+                  this.shapeOnBoard[shape],
+                  shape,
+                  fullRow
+                );
+              }
+              if (elementNeedToBeUpdated.length > 0) {
+                this.shapeOnBoard[shape] = this.updateElmentNeedToBeUpdated(
+                  elementNeedToBeUpdated,
+                  this.shapeOnBoard[shape]
+                );
+              }
+            }
+          }
+          row = 30;
+        } else {
+          row--;
+        }
+      }
     },
     checkIfDivsAvailable(offset) {
       let newArray = this.currentShapeArray.slice(0, 4);
       let newArrayWithOffset = newArray.map(
         element => (element = parseInt(element) + offset)
       );
+      let newArrayWithOffset100 = newArray.map(
+        element => (element = parseInt(element) + 100)
+      );
       for (let i = 0; i < newArray.length; i++) {
         if (
           Math.floor(newArray[i] / 100) === 30 ||
-          this.occupiedDivsPerRow[
-            Math.floor(newArrayWithOffset[i] / 100)
-          ].includes(newArrayWithOffset[i])
+          (this.checkIfAvailableAfterOneMove(newArrayWithOffset) &&
+            this.checkIfAvailableAfterOneMove(newArrayWithOffset100))
         ) {
           newArray.forEach(element => {
-            if (
-              !this.occupiedDivsPerRow[Math.floor(element / 100)].includes(
-                element
-              )
-            ) {
-              this.occupiedDivsPerRow[Math.floor(element / 100)].push(element);
-            }
+            this.occupiedDivsPerRow[Math.floor(element / 100)]++;
+            this.shapeOnBoard[this.currentShape].push(element);
           });
           return false;
+        } else if (
+          this.checkIfAvailableAfterOneMove(newArrayWithOffset) &&
+          !this.checkIfAvailableAfterOneMove(newArrayWithOffset100)
+        ) {
+          this.currentOffSet = 100;
+          return true;
         }
       }
       return true;
+    },
+    checkIfAvailableAfterOneMove(newArray) {
+      for (let shape in this.shapeOnBoard) {
+        if (this.shapeOnBoard[shape].length > 0) {
+          for (let i = 0; i < newArray.length; i++) {
+            if (this.shapeOnBoard[shape].includes(newArray[i])) return true;
+          }
+        }
+      }
+      return false;
     },
     transformShape() {
       this.currentShapeArray.forEach(element => {
@@ -342,10 +445,7 @@ export default {
         }
       }
       if (e.code === "ArrowDown") {
-        if (this.currentBottom > 0) {
-          this.currentBottom -= 20;
-          this.moveShape(100);
-        }
+        this.moveShape(100);
       }
       if (e.code === "ArrowUp" && this.currentShape != "square") {
         this.transformShape();
@@ -365,7 +465,7 @@ h3 {
   margin: auto;
   width: 200px;
   height: 400px;
-  background-color: #fff099;
+  background-color: #faf5db;
   /* border: rgb(174, 218, 226) 1px solid; */
 }
 .tetris-grid div {
@@ -401,5 +501,8 @@ h3 {
 .dotshape {
   background-color: rgb(0, 128, 28);
   border: rgb(174, 218, 226) 1px solid;
+}
+.star {
+  background-image: url("../assets/star.png");
 }
 </style>
