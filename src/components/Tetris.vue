@@ -102,7 +102,9 @@ export default {
       let startBtn = document.getElementsByClassName("tetris-btn")[0];
       switch (this.clickedTimes) {
         case 0:
-          this.newShape(), this.clickedTimes++;
+          this.newShape();
+          this.clickedTimes++;
+          this.timeUsedInterval = setInterval(() => this.timeUsed++, 1000);
           startBtn.innerHTML = "Pause";
           break;
         case 1:
@@ -182,8 +184,20 @@ export default {
       this.currentShapeArray.forEach(element => {
         document.getElementById(element).classList.add(this.currentShape);
       });
-      this.setNewCurrentLeftAndRight();
-      this.movedownInterval = setInterval(this.moveShape, 1000, 100);
+      let newArray = this.currentShapeArray.slice(0, 4);
+      let newArrayWithOffset100 = newArray.map(
+        element => (element = parseInt(element) + 100)
+      );
+      if (
+        this.checkIfAvailableAfterOneMove(newArray) &&
+        this.checkIfAvailableAfterOneMove(newArrayWithOffset100)
+      ) {
+        document.getElementById("content").innerHTML = "Game Over";
+        document.getElementById("myModal").style.display = "block";
+      } else {
+        this.setNewCurrentLeftAndRight();
+        this.movedownInterval = setInterval(this.moveShape, 1000, 100);
+      }
     },
     setNewCurrentLeftAndRight() {
       switch (this.currentShape) {
