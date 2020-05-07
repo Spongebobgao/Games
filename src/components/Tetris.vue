@@ -47,6 +47,7 @@ export default {
       currentShapeArray: null,
       currentShape: null,
       movedownInterval: null,
+      timeUsedInterval: null,
       tranformTimes: 0,
       currentLeft: 0,
       currentRight: 0,
@@ -82,31 +83,65 @@ export default {
         dotshape: []
       },
       currentOffSet: 100,
+      clickedTimes: 0,
       timeInterval: null
     };
   },
   methods: {
     startOver() {
-      this.startGame();
       this.closeModal();
+      this.clearBoard();
+      this.resetData();
+      this.newShape();
     },
     closeModal() {
       document.getElementById("myModal").style.display = "none";
     },
     startGame() {
       window.addEventListener("keydown", this.moveAndTranform);
-      this.resetData();
-      this.newShape();
+      let startBtn = document.getElementsByClassName("tetris-btn")[0];
+      switch (this.clickedTimes) {
+        case 0:
+          this.newShape(), this.clickedTimes++;
+          startBtn.innerHTML = "Pause";
+          break;
+        case 1:
+          clearInterval(this.movedownInterval);
+          clearInterval(this.timeUsedInterval);
+          window.removeEventListener("keydown", this.moveAndTranform);
+          startBtn.innerHTML = "Resume";
+          this.clickedTimes++;
+          break;
+        case 2:
+          window.addEventListener("keydown", this.moveAndTranform);
+          this.timeUsedInterval = setInterval(() => this.timeUsed++, 1000);
+          this.movedownInterval = setInterval(this.moveShape, 1000, 100);
+          startBtn.innerHTML = "Pause";
+          this.clickedTimes--;
+          break;
+      }
+    },
+    clearBoard() {
+      for (let shape in this.shapeOnBoard) {
+        if (this.shapeOnBoard[shape].length > 0) {
+          console.log(shape, "true");
+          this.shapeOnBoard[shape].forEach(element =>
+            document.getElementById(element).classList.remove(shape)
+          );
+        }
+      }
+      if (this.currentShapeArray != null) {
+        this.currentShapeArray.forEach(element =>
+          document.getElementById(element).classList.remove(this.currentShape)
+        );
+      }
     },
     resetData() {
-      if (this.timeInterval != null) clearInterval(this.timeInterval);
+      clearInterval(this.timeUsedInterval);
+      this.clickedTimes = 0;
       this.tranformTimes = 0;
-      this.timeUsed = 0;
-      this.timeInterval = setInterval(() => this.timeUsed++, 1000);
-      this.currentOffSet = 100;
       this.score = 0;
-      this.currentLeft = 0;
-      this.currentRight = 0;
+      this.timeUsed = 0;
       this.occupiedDivsPerRow = {
         11: 0,
         12: 0,
@@ -136,6 +171,8 @@ export default {
         zshape: [],
         dotshape: []
       };
+      this.currentOffSet = 100;
+      this.timeUsedInterval = setInterval(() => this.timeUsed++, 1000);
     },
     newShape() {
       clearInterval(this.movedownInterval);
