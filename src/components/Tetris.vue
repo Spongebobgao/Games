@@ -126,7 +126,6 @@ export default {
     clearBoard() {
       for (let shape in this.shapeOnBoard) {
         if (this.shapeOnBoard[shape].length > 0) {
-          console.log(shape, "true");
           this.shapeOnBoard[shape].forEach(element =>
             document.getElementById(element).classList.remove(shape)
           );
