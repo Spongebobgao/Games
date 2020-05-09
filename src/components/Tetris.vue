@@ -101,11 +101,11 @@ export default {
       clearInterval(this.movedownInterval);
       const keys = Object.keys(this.allTheshapes);
       this.currentShape = keys[Math.floor(Math.random() * keys.length)];
+      this.setNewCurrentLeftAndRight();
       this.currentShapeArray = this.allTheshapes[this.currentShape];
       this.currentShapeArray.forEach(element => {
         document.getElementById(element).classList.add(this.currentShape);
       });
-      this.setNewCurrentLeftAndRight();
       this.movedownInterval = setInterval(this.moveShape, 1000, 100);
     },
     setNewCurrentLeftAndRight() {
@@ -244,8 +244,8 @@ export default {
       for (let i = 0; i < newArray.length; i++) {
         if (
           Math.floor(newArray[i] / 100) === 30 ||
-          (this.checkIfAvailableAfterOneMove(newArrayWithOffset) &&
-            this.checkIfAvailableAfterOneMove(newArrayWithOffset100))
+          (!this.checkIfAvailableAfterOneMove(newArrayWithOffset) &&
+            !this.checkIfAvailableAfterOneMove(newArrayWithOffset100))
         ) {
           newArray.forEach(element => {
             this.occupiedDivsPerRow[Math.floor(element / 100)]++;
@@ -253,8 +253,8 @@ export default {
           });
           return false;
         } else if (
-          this.checkIfAvailableAfterOneMove(newArrayWithOffset) &&
-          !this.checkIfAvailableAfterOneMove(newArrayWithOffset100)
+          !this.checkIfAvailableAfterOneMove(newArrayWithOffset) &&
+          this.checkIfAvailableAfterOneMove(newArrayWithOffset100)
         ) {
           this.currentOffSet = 100;
           return true;
@@ -266,11 +266,11 @@ export default {
       for (let shape in this.shapeOnBoard) {
         if (this.shapeOnBoard[shape].length > 0) {
           for (let i = 0; i < newArray.length; i++) {
-            if (this.shapeOnBoard[shape].includes(newArray[i])) return true;
+            if (this.shapeOnBoard[shape].includes(newArray[i])) return false;
           }
         }
       }
-      return false;
+      return true;
     },
     transformShape() {
       this.currentShapeArray.forEach(element => {
@@ -297,20 +297,33 @@ export default {
       if (this.tranformTimes === 0) {
         element = this.currentShapeArray[0];
         newArray = [element, element + 100, element + 200, element + 300];
-        this.currentRight += 60;
-        this.updateTheBoard(newArray);
-        this.tranformTimes++;
+        if (this.checkIfAvailableAfterOneMove(newArray)) {
+          this.currentRight += 60;
+          this.updateTheBoard(newArray);
+          this.tranformTimes++;
+        } else {
+          this.updateTheBoard(this.currentShapeArray);
+        }
       } else {
         this.tranformTimes = 0;
         element = this.currentShapeArray[0];
         if (this.currentLeft <= 60) {
           newArray = [element, element + 1, element + 2, element + 3];
-          this.currentRight -= 60;
+          if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.updateTheBoard(newArray);
+            this.currentRight -= 60;
+          } else {
+            this.updateTheBoard(this.currentShapeArray);
+          }
         } else {
           newArray = [element - 3, element - 2, element - 1, element];
-          this.currentLeft -= 60;
+          if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.currentLeft -= 60;
+            this.updateTheBoard(newArray);
+          } else {
+            this.updateTheBoard(this.currentShapeArray);
+          }
         }
-        this.updateTheBoard(newArray);
       }
     },
     transformLShape() {
@@ -319,37 +332,65 @@ export default {
       if (this.tranformTimes === 0) {
         element = this.currentShapeArray[0];
         newArray = [element, element + 1, element + 100, element + 200];
-        this.tranformTimes++;
-        this.updateTheBoard(newArray);
-        this.currentRight += 20;
+        if (this.checkIfAvailableAfterOneMove(newArray)) {
+          this.tranformTimes++;
+          this.updateTheBoard(newArray);
+          this.currentRight += 20;
+        } else {
+          this.updateTheBoard(this.currentShapeArray);
+        }
       } else if (this.tranformTimes === 1) {
         element = this.currentShapeArray[2];
         if (this.currentLeft === 0) {
           newArray = [element, element + 1, element + 2, element + 2 + 100];
-          this.currentRight -= 20;
+          if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.currentRight -= 20;
+            this.tranformTimes++;
+            this.updateTheBoard(newArray);
+          } else {
+            this.updateTheBoard(this.currentShapeArray);
+          }
         } else {
           newArray = [element - 1, element, element + 1, element + 100 + 1];
-          this.currentLeft -= 20;
+          if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.currentLeft -= 20;
+            this.tranformTimes++;
+            this.updateTheBoard(newArray);
+          } else {
+            this.updateTheBoard(this.currentShapeArray);
+          }
         }
-        this.tranformTimes++;
-        this.updateTheBoard(newArray);
       } else if (this.tranformTimes === 2) {
         element = this.currentShapeArray[1];
         newArray = [element - 100, element, element + 100 - 1, element + 100];
-        this.currentRight += 20;
-        this.tranformTimes++;
-        this.updateTheBoard(newArray);
+        if (this.checkIfAvailableAfterOneMove(newArray)) {
+          this.currentRight += 20;
+          this.tranformTimes++;
+          this.updateTheBoard(newArray);
+        } else {
+          this.updateTheBoard(this.currentShapeArray);
+        }
       } else if (this.tranformTimes === 3) {
         element = this.currentShapeArray[3];
         if (this.currentLeft === 0) {
           newArray = [element - 100 - 1, element - 1, element, element + 1];
-          this.currentRight -= 20;
+          if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.currentRight -= 20;
+            this.updateTheBoard(newArray);
+            this.tranformTimes = 0;
+          } else {
+            this.updateTheBoard(this.currentShapeArray);
+          }
         } else {
           newArray = [element - 100 - 2, element - 2, element - 1, element];
-          this.currentLeft -= 20;
+          if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.currentLeft -= 20;
+            this.updateTheBoard(newArray);
+            this.tranformTimes = 0;
+          } else {
+            this.updateTheBoard(this.currentShapeArray);
+          }
         }
-        this.updateTheBoard(newArray);
-        this.tranformTimes = 0;
       }
     },
     transformZSahpe() {
@@ -363,9 +404,13 @@ export default {
           element + 100 + 1,
           element + 200 + 1
         ];
-        this.updateTheBoard(newArray);
-        this.currentLeft += 20;
-        this.tranformTimes++;
+        if (this.checkIfAvailableAfterOneMove(newArray)) {
+          this.updateTheBoard(newArray);
+          this.currentLeft += 20;
+          this.tranformTimes++;
+        } else {
+          this.updateTheBoard(this.currentShapeArray);
+        }
       } else {
         element = this.currentShapeArray[1];
         if (this.currentLeft === 0) {
@@ -375,13 +420,23 @@ export default {
             element,
             element + 1
           ];
-          this.currentRight -= 20;
+          if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.currentRight -= 20;
+            this.updateTheBoard(newArray);
+            this.tranformTimes = 0;
+          } else {
+            this.updateTheBoard(this.currentShapeArray);
+          }
         } else {
           newArray = [element, element + 1, element + 100 - 1, element + 100];
-          this.currentLeft -= 20;
+          if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.currentLeft -= 20;
+            this.updateTheBoard(newArray);
+            this.tranformTimes = 0;
+          } else {
+            this.updateTheBoard(this.currentShapeArray);
+          }
         }
-        this.updateTheBoard(newArray);
-        this.tranformTimes = 0;
       }
     },
     transformDotShape() {
@@ -390,37 +445,65 @@ export default {
       if (this.tranformTimes === 0) {
         element = this.currentShapeArray[2];
         newArray = [element - 100, element, element + 1, element + 100];
-        this.updateTheBoard(newArray);
-        this.currentLeft += 20;
-        this.tranformTimes++;
+        if (this.checkIfAvailableAfterOneMove(newArray)) {
+          this.updateTheBoard(newArray);
+          this.currentLeft += 20;
+          this.tranformTimes++;
+        } else {
+          this.updateTheBoard(this.currentShapeArray);
+        }
       } else if (this.tranformTimes === 1) {
         element = this.currentShapeArray[1];
         if (this.currentLeft === 0) {
           newArray = [element, element + 1, element + 2, element + 1 + 100];
-          this.currentRight -= 20;
+          if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.currentRight -= 20;
+            this.updateTheBoard(newArray);
+            this.tranformTimes++;
+          } else {
+            this.updateTheBoard(this.currentShapeArray);
+          }
         } else {
           newArray = [element - 1, element, element + 1, element + 100];
-          this.currentLeft -= 20;
+          if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.currentLeft -= 20;
+            this.updateTheBoard(newArray);
+            this.tranformTimes++;
+          } else {
+            this.updateTheBoard(this.currentShapeArray);
+          }
         }
-        this.updateTheBoard(newArray);
-        this.tranformTimes++;
       } else if (this.tranformTimes === 2) {
         element = this.currentShapeArray[1];
         newArray = [element, element + 100 - 1, element + 100, element + 200];
-        this.updateTheBoard(newArray);
-        this.tranformTimes++;
-        this.currentRight += 20;
+        if (this.checkIfAvailableAfterOneMove(newArray)) {
+          this.updateTheBoard(newArray);
+          this.tranformTimes++;
+          this.currentRight += 20;
+        } else {
+          this.updateTheBoard(this.currentShapeArray);
+        }
       } else if (this.tranformTimes === 3) {
         element = this.currentShapeArray[3];
         if (this.currentLeft === 0) {
           newArray = [element - 100, element - 1, element, element + 1];
-          this.currentRight - 20;
+          if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.currentRight - 20;
+            this.updateTheBoard(newArray);
+            this.tranformTimes = 0;
+          } else {
+            this.updateTheBoard(this.currentShapeArray);
+          }
         } else {
           newArray = [element - 1 - 100, element - 2, element - 1, element];
-          this.currentLeft -= 20;
+          if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.currentLeft -= 20;
+            this.updateTheBoard(newArray);
+            this.tranformTimes = 0;
+          } else {
+            this.updateTheBoard(this.currentShapeArray);
+          }
         }
-        this.updateTheBoard(newArray);
-        this.tranformTimes = 0;
       }
     },
     updateTheBoard(newArray) {
