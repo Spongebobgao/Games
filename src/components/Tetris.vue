@@ -47,9 +47,8 @@ export default {
       currentShapeArray: null,
       currentShape: null,
       movedownInterval: null,
+      timeUsedInterval: null,
       tranformTimes: 0,
-      currentLeft: 0,
-      currentRight: 0,
       score: 0,
       timeUsed: 0,
       occupiedDivsPerRow: {
@@ -81,55 +80,120 @@ export default {
         zshape: [],
         dotshape: []
       },
-      currentOffSet: 100
+      currentOffSet: 100,
+      clickedTimes: 0,
+      timeInterval: null
     };
   },
   methods: {
     startOver() {
-      this.startGame();
       this.closeModal();
+      this.clearBoard();
+      this.resetData();
+      this.newShape();
     },
     closeModal() {
       document.getElementById("myModal").style.display = "none";
     },
     startGame() {
       window.addEventListener("keydown", this.moveAndTranform);
-      this.newShape();
+      let startBtn = document.getElementsByClassName("tetris-btn")[0];
+      switch (this.clickedTimes) {
+        case 0:
+          this.newShape();
+          this.clickedTimes++;
+          this.timeUsedInterval = setInterval(() => this.timeUsed++, 1000);
+          startBtn.innerHTML = "Pause";
+          break;
+        case 1:
+          clearInterval(this.movedownInterval);
+          clearInterval(this.timeUsedInterval);
+          window.removeEventListener("keydown", this.moveAndTranform);
+          startBtn.innerHTML = "Resume";
+          this.clickedTimes++;
+          break;
+        case 2:
+          window.addEventListener("keydown", this.moveAndTranform);
+          this.timeUsedInterval = setInterval(() => this.timeUsed++, 1000);
+          this.movedownInterval = setInterval(this.moveShape, 1000, 100);
+          startBtn.innerHTML = "Pause";
+          this.clickedTimes--;
+          break;
+      }
+    },
+    clearBoard() {
+      for (let shape in this.shapeOnBoard) {
+        if (this.shapeOnBoard[shape].length > 0) {
+          this.shapeOnBoard[shape].forEach(element =>
+            document.getElementById(element).classList.remove(shape)
+          );
+        }
+      }
+      if (this.currentShapeArray != null) {
+        this.currentShapeArray.forEach(element =>
+          document.getElementById(element).classList.remove(this.currentShape)
+        );
+      }
+    },
+    resetData() {
+      clearInterval(this.timeUsedInterval);
+      this.clickedTimes = 0;
+      this.tranformTimes = 0;
+      this.score = 0;
+      this.timeUsed = 0;
+      this.occupiedDivsPerRow = {
+        11: 0,
+        12: 0,
+        13: 0,
+        14: 0,
+        15: 0,
+        16: 0,
+        17: 0,
+        18: 0,
+        19: 0,
+        20: 0,
+        21: 0,
+        22: 0,
+        23: 0,
+        24: 0,
+        25: 0,
+        26: 0,
+        27: 0,
+        28: 0,
+        29: 0,
+        30: 0
+      };
+      this.shapeOnBoard = {
+        square: [],
+        stick: [],
+        lshape: [],
+        zshape: [],
+        dotshape: []
+      };
+      this.currentOffSet = 100;
+      this.timeUsedInterval = setInterval(() => this.timeUsed++, 1000);
     },
     newShape() {
-      this.tranformTimes = 0;
       clearInterval(this.movedownInterval);
+      this.tranformTimes = 0;
       const keys = Object.keys(this.allTheshapes);
       this.currentShape = keys[Math.floor(Math.random() * keys.length)];
-      this.setNewCurrentLeftAndRight();
       this.currentShapeArray = this.allTheshapes[this.currentShape];
       this.currentShapeArray.forEach(element => {
         document.getElementById(element).classList.add(this.currentShape);
       });
-      this.movedownInterval = setInterval(this.moveShape, 1000, 100);
-    },
-    setNewCurrentLeftAndRight() {
-      switch (this.currentShape) {
-        case "square":
-          this.currentLeft = 4 * 20;
-          this.currentRight = 4 * 20;
-          break;
-        case "stick":
-          this.currentLeft = 3 * 20;
-          this.currentRight = 3 * 20;
-          break;
-        case "lshape":
-          this.currentLeft = 3 * 20;
-          this.currentRight = 4 * 20;
-          break;
-        case "zshape":
-          this.currentLeft = 3 * 20;
-          this.currentRight = 4 * 20;
-          break;
-        case "dotshape":
-          this.currentLeft = 4 * 20;
-          this.currentRight = 3 * 20;
-          break;
+      let newArray = this.currentShapeArray.slice(0, 4);
+      let newArrayWithOffset100 = newArray.map(
+        element => (element = parseInt(element) + 100)
+      );
+      if (
+        !this.checkIfAvailableAfterOneMove(newArray) &&
+        !this.checkIfAvailableAfterOneMove(newArrayWithOffset100)
+      ) {
+        document.getElementById("content").innerHTML = "Game Over";
+        document.getElementById("myModal").style.display = "block";
+      } else {
+        this.movedownInterval = setInterval(this.moveShape, 1000, 100);
       }
     },
     moveShape(offset) {
@@ -266,7 +330,12 @@ export default {
       for (let shape in this.shapeOnBoard) {
         if (this.shapeOnBoard[shape].length > 0) {
           for (let i = 0; i < newArray.length; i++) {
-            if (this.shapeOnBoard[shape].includes(newArray[i])) return false;
+            if (
+              this.shapeOnBoard[shape].includes(newArray[i]) ||
+              Math.floor(newArray[i] / 100) === 31
+            ) {
+              return false;
+            }
           }
         }
       }
@@ -298,7 +367,7 @@ export default {
         element = this.currentShapeArray[0];
         newArray = [element, element + 100, element + 200, element + 300];
         if (this.checkIfAvailableAfterOneMove(newArray)) {
-          this.currentRight += 60;
+          this.currentShapeArray = newArray;
           this.updateTheBoard(newArray);
           this.tranformTimes++;
         } else {
@@ -307,18 +376,19 @@ export default {
       } else {
         this.tranformTimes = 0;
         element = this.currentShapeArray[0];
-        if (this.currentLeft <= 60) {
+        let columnNum = this.getColumnNum();
+        if (columnNum[0] <= 13) {
           newArray = [element, element + 1, element + 2, element + 3];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
+            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
-            this.currentRight -= 60;
           } else {
             this.updateTheBoard(this.currentShapeArray);
           }
         } else {
           newArray = [element - 3, element - 2, element - 1, element];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentLeft -= 60;
+            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
           } else {
             this.updateTheBoard(this.currentShapeArray);
@@ -329,22 +399,23 @@ export default {
     transformLShape() {
       let element;
       let newArray;
+      let columnNum = this.getColumnNum();
       if (this.tranformTimes === 0) {
         element = this.currentShapeArray[0];
         newArray = [element, element + 1, element + 100, element + 200];
         if (this.checkIfAvailableAfterOneMove(newArray)) {
+          this.currentShapeArray = newArray;
           this.tranformTimes++;
           this.updateTheBoard(newArray);
-          this.currentRight += 20;
         } else {
           this.updateTheBoard(this.currentShapeArray);
         }
       } else if (this.tranformTimes === 1) {
         element = this.currentShapeArray[2];
-        if (this.currentLeft === 0) {
+        if (columnNum[0] === 11) {
           newArray = [element, element + 1, element + 2, element + 2 + 100];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentRight -= 20;
+            this.currentShapeArray = newArray;
             this.tranformTimes++;
             this.updateTheBoard(newArray);
           } else {
@@ -353,7 +424,7 @@ export default {
         } else {
           newArray = [element - 1, element, element + 1, element + 100 + 1];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentLeft -= 20;
+            this.currentShapeArray = newArray;
             this.tranformTimes++;
             this.updateTheBoard(newArray);
           } else {
@@ -364,7 +435,7 @@ export default {
         element = this.currentShapeArray[1];
         newArray = [element - 100, element, element + 100 - 1, element + 100];
         if (this.checkIfAvailableAfterOneMove(newArray)) {
-          this.currentRight += 20;
+          this.currentShapeArray = newArray;
           this.tranformTimes++;
           this.updateTheBoard(newArray);
         } else {
@@ -372,10 +443,10 @@ export default {
         }
       } else if (this.tranformTimes === 3) {
         element = this.currentShapeArray[3];
-        if (this.currentLeft === 0) {
+        if (columnNum[2] === 11) {
           newArray = [element - 100 - 1, element - 1, element, element + 1];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentRight -= 20;
+            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes = 0;
           } else {
@@ -384,7 +455,7 @@ export default {
         } else {
           newArray = [element - 100 - 2, element - 2, element - 1, element];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentLeft -= 20;
+            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes = 0;
           } else {
@@ -396,6 +467,7 @@ export default {
     transformZSahpe() {
       let element;
       let newArray;
+      let columnNum = this.getColumnNum();
       if (this.tranformTimes === 0) {
         element = this.currentShapeArray[0];
         newArray = [
@@ -405,15 +477,15 @@ export default {
           element + 200 + 1
         ];
         if (this.checkIfAvailableAfterOneMove(newArray)) {
+          this.currentShapeArray = newArray;
           this.updateTheBoard(newArray);
-          this.currentLeft += 20;
           this.tranformTimes++;
         } else {
           this.updateTheBoard(this.currentShapeArray);
         }
       } else {
         element = this.currentShapeArray[1];
-        if (this.currentLeft === 0) {
+        if (columnNum[0] === 11) {
           newArray = [
             element + 1 - 100,
             element + 2 - 100,
@@ -421,7 +493,7 @@ export default {
             element + 1
           ];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentRight -= 20;
+            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes = 0;
           } else {
@@ -430,7 +502,7 @@ export default {
         } else {
           newArray = [element, element + 1, element + 100 - 1, element + 100];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentLeft -= 20;
+            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes = 0;
           } else {
@@ -442,22 +514,23 @@ export default {
     transformDotShape() {
       let element;
       let newArray;
+      let columnNum = this.getColumnNum();
       if (this.tranformTimes === 0) {
         element = this.currentShapeArray[2];
         newArray = [element - 100, element, element + 1, element + 100];
         if (this.checkIfAvailableAfterOneMove(newArray)) {
+          this.currentShapeArray = newArray;
           this.updateTheBoard(newArray);
-          this.currentLeft += 20;
           this.tranformTimes++;
         } else {
           this.updateTheBoard(this.currentShapeArray);
         }
       } else if (this.tranformTimes === 1) {
         element = this.currentShapeArray[1];
-        if (this.currentLeft === 0) {
+        if (columnNum[0] === 11) {
           newArray = [element, element + 1, element + 2, element + 1 + 100];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentRight -= 20;
+            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes++;
           } else {
@@ -466,7 +539,7 @@ export default {
         } else {
           newArray = [element - 1, element, element + 1, element + 100];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentLeft -= 20;
+            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes++;
           } else {
@@ -477,18 +550,18 @@ export default {
         element = this.currentShapeArray[1];
         newArray = [element, element + 100 - 1, element + 100, element + 200];
         if (this.checkIfAvailableAfterOneMove(newArray)) {
+          this.currentShapeArray = newArray;
           this.updateTheBoard(newArray);
           this.tranformTimes++;
-          this.currentRight += 20;
         } else {
           this.updateTheBoard(this.currentShapeArray);
         }
       } else if (this.tranformTimes === 3) {
         element = this.currentShapeArray[3];
-        if (this.currentLeft === 0) {
+        if (columnNum[1] === 11) {
           newArray = [element - 100, element - 1, element, element + 1];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentRight - 20;
+            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes = 0;
           } else {
@@ -497,7 +570,7 @@ export default {
         } else {
           newArray = [element - 1 - 100, element - 2, element - 1, element];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentLeft -= 20;
+            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes = 0;
           } else {
@@ -512,19 +585,40 @@ export default {
         document.getElementById(element).classList.add(this.currentShape);
       });
     },
+    getColumnNum() {
+      let column = [];
+      for (let i = 0; i < this.currentShapeArray.length; i++) {
+        column[i] = Math.floor(this.currentShapeArray[i] % 100);
+      }
+      return column;
+    },
+    checkLeft() {
+      let left = 30;
+      for (let i = 0; i < this.currentShapeArray.length; i++) {
+        if (left > Math.floor(this.currentShapeArray[i] % 100)) {
+          left = Math.floor(this.currentShapeArray[i] % 100);
+        }
+      }
+      return left > 11 ? true : false;
+    },
+    checkRight() {
+      let left = 11;
+      for (let i = 0; i < this.currentShapeArray.length; i++) {
+        if (left < Math.floor(this.currentShapeArray[i] % 100)) {
+          left = Math.floor(this.currentShapeArray[i] % 100);
+        }
+      }
+      return left < 20 ? true : false;
+    },
     moveAndTranform(e) {
       if (e.code === "ArrowLeft") {
-        if (this.currentLeft > 0) {
+        if (this.checkLeft()) {
           this.moveShape(-1);
-          this.currentLeft -= 20;
-          this.currentRight += 20;
         }
       }
       if (e.code === "ArrowRight") {
-        if (this.currentRight > 0) {
+        if (this.checkRight()) {
           this.moveShape(1);
-          this.currentLeft += 20;
-          this.currentRight -= 20;
         }
       }
       if (e.code === "ArrowDown") {
