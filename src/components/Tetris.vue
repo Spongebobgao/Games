@@ -81,8 +81,7 @@ export default {
         dotshape: []
       },
       currentOffSet: 100,
-      clickedTimes: 0,
-      timeInterval: null
+      clickedTimes: 0
     };
   },
   methods: {
@@ -94,6 +93,9 @@ export default {
     },
     closeModal() {
       document.getElementById("myModal").style.display = "none";
+      this.clickedTimes = 3;
+      let startBtn = document.getElementsByClassName("tetris-btn")[0];
+      startBtn.innerHTML = "Play Again";
     },
     startGame() {
       window.addEventListener("keydown", this.moveAndTranform);
@@ -118,6 +120,12 @@ export default {
           this.movedownInterval = setInterval(this.moveShape, 1000, 100);
           startBtn.innerHTML = "Pause";
           this.clickedTimes--;
+          break;
+        case 3:
+          this.clearBoard();
+          this.resetData();
+          this.newShape();
+          startBtn.innerHTML = "Pause";
           break;
       }
     },
@@ -190,6 +198,7 @@ export default {
         !this.checkIfAvailableAfterOneMove(newArray) &&
         !this.checkIfAvailableAfterOneMove(newArrayWithOffset100)
       ) {
+        clearInterval(this.timeUsedInterval);
         document.getElementById("content").innerHTML = "Game Over";
         document.getElementById("myModal").style.display = "block";
       } else {
@@ -367,7 +376,6 @@ export default {
         element = this.currentShapeArray[0];
         newArray = [element, element + 100, element + 200, element + 300];
         if (this.checkIfAvailableAfterOneMove(newArray)) {
-          this.currentShapeArray = newArray;
           this.updateTheBoard(newArray);
           this.tranformTimes++;
         } else {
@@ -380,7 +388,6 @@ export default {
         if (columnNum[0] <= 13) {
           newArray = [element, element + 1, element + 2, element + 3];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
           } else {
             this.updateTheBoard(this.currentShapeArray);
@@ -388,7 +395,6 @@ export default {
         } else {
           newArray = [element - 3, element - 2, element - 1, element];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
           } else {
             this.updateTheBoard(this.currentShapeArray);
@@ -404,7 +410,6 @@ export default {
         element = this.currentShapeArray[0];
         newArray = [element, element + 1, element + 100, element + 200];
         if (this.checkIfAvailableAfterOneMove(newArray)) {
-          this.currentShapeArray = newArray;
           this.tranformTimes++;
           this.updateTheBoard(newArray);
         } else {
@@ -415,7 +420,6 @@ export default {
         if (columnNum[0] === 11) {
           newArray = [element, element + 1, element + 2, element + 2 + 100];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentShapeArray = newArray;
             this.tranformTimes++;
             this.updateTheBoard(newArray);
           } else {
@@ -424,7 +428,6 @@ export default {
         } else {
           newArray = [element - 1, element, element + 1, element + 100 + 1];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentShapeArray = newArray;
             this.tranformTimes++;
             this.updateTheBoard(newArray);
           } else {
@@ -435,7 +438,6 @@ export default {
         element = this.currentShapeArray[1];
         newArray = [element - 100, element, element + 100 - 1, element + 100];
         if (this.checkIfAvailableAfterOneMove(newArray)) {
-          this.currentShapeArray = newArray;
           this.tranformTimes++;
           this.updateTheBoard(newArray);
         } else {
@@ -446,7 +448,6 @@ export default {
         if (columnNum[2] === 11) {
           newArray = [element - 100 - 1, element - 1, element, element + 1];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes = 0;
           } else {
@@ -455,7 +456,6 @@ export default {
         } else {
           newArray = [element - 100 - 2, element - 2, element - 1, element];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes = 0;
           } else {
@@ -477,7 +477,6 @@ export default {
           element + 200 + 1
         ];
         if (this.checkIfAvailableAfterOneMove(newArray)) {
-          this.currentShapeArray = newArray;
           this.updateTheBoard(newArray);
           this.tranformTimes++;
         } else {
@@ -493,7 +492,6 @@ export default {
             element + 1
           ];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes = 0;
           } else {
@@ -502,7 +500,6 @@ export default {
         } else {
           newArray = [element, element + 1, element + 100 - 1, element + 100];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes = 0;
           } else {
@@ -519,7 +516,6 @@ export default {
         element = this.currentShapeArray[2];
         newArray = [element - 100, element, element + 1, element + 100];
         if (this.checkIfAvailableAfterOneMove(newArray)) {
-          this.currentShapeArray = newArray;
           this.updateTheBoard(newArray);
           this.tranformTimes++;
         } else {
@@ -530,7 +526,6 @@ export default {
         if (columnNum[0] === 11) {
           newArray = [element, element + 1, element + 2, element + 1 + 100];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes++;
           } else {
@@ -539,7 +534,6 @@ export default {
         } else {
           newArray = [element - 1, element, element + 1, element + 100];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes++;
           } else {
@@ -550,7 +544,6 @@ export default {
         element = this.currentShapeArray[1];
         newArray = [element, element + 100 - 1, element + 100, element + 200];
         if (this.checkIfAvailableAfterOneMove(newArray)) {
-          this.currentShapeArray = newArray;
           this.updateTheBoard(newArray);
           this.tranformTimes++;
         } else {
@@ -561,7 +554,6 @@ export default {
         if (columnNum[1] === 11) {
           newArray = [element - 100, element - 1, element, element + 1];
           if (this.checkIfAvailableAfterOneMove(newArray)) {
-            this.currentShapeArray = newArray;
             this.updateTheBoard(newArray);
             this.tranformTimes = 0;
           } else {
