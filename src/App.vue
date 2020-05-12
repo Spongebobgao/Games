@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar app color="#b62f2f" dark>
       <div class="d-flex align-center">
-        <a href="/">
+        <a href="https://spongebobgao.github.io/Games/#/">
           <v-img
             alt="Games"
             class="shrink mt-1 hidden-sm-and-down"
