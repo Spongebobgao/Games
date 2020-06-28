@@ -1,29 +1,10 @@
 # games
  https://spongebobgao.github.io/Games/
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# Seven games
+## 1. Memory game
+## 2. Whack the mole
+## 3. Snake
+## 4. Five in a row
+## 5. Space invader
+## 6. Frogger
+## 7. Tetris
